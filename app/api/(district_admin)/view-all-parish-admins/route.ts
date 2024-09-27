@@ -23,7 +23,7 @@ export async function GET() {
       }
 
       return NextResponse.json({
-        allParishAdmins: response.allParishAdmins,
+        allParishAdmins: response.data,
       }, {status: 200})
 
     } else {
