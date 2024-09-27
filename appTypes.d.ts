@@ -9,8 +9,8 @@ type AccountApplicationData = {
   position: string;
   gender: string;
   allocation: string;
-  district: string;
-  parish: string;
+  district?: string;
+  parish?: string;
   requested_position: "district_admin" | "parish_admin" | "field_agent";
   hasAccess?: boolean;
   email?: string;

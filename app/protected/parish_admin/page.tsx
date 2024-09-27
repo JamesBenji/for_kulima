@@ -3,7 +3,6 @@ import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
 import React from "react";
 
-const supabase = createClient();
 
 const adminHasAccess = async (
   supabase: SupabaseClient<any, "public", any>,
@@ -21,6 +20,8 @@ const adminHasAccess = async (
 };
 
 async function ParishAdmin() {
+  const supabase = createClient();
+
   const email = (await supabase.auth.getUser()).data.user?.email;
   const hasAccess = await adminHasAccess(supabase, email!);
 

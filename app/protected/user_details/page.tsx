@@ -2,7 +2,6 @@ import ApplicantForm from "@/components/ApplicantForm";
 import { hasRequestedRole } from "@/lib/request-account/functions";
 import { createClient } from "@/utils/supabase/server";
 import React from "react";
-const supabase = createClient();
 
 async function ApplicantDetails() {
   // const data: AccountApplicationData = {
@@ -18,6 +17,8 @@ async function ApplicantDetails() {
   // };
 
   // check if applied
+  const supabase = createClient();
+
 
   const {
     data: { user },
