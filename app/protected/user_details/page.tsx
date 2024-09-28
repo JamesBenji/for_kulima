@@ -30,7 +30,7 @@ async function ApplicantDetails() {
     return (
       <div className="max-w-prose m-auto">
         {applicant && (
-          <h1>
+          <h1 className="px-4">
             You already made an application for access as{" "}
             {applicant.requested_position === "district_admin"
               ? "district administrator"

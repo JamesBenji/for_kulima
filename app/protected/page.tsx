@@ -1,15 +1,5 @@
-import GrantAccessButton from "@/components/client-rej-by-server/ministry_admin/GrantAccessButton";
-import ReGrantAccessButton from "@/components/client-rej-by-server/ministry_admin/ReGrantAccessButton";
-import RevokeAccessButton from "@/components/client-rej-by-server/ministry_admin/RevokeAccessButton";
-import SearchUserButton from "@/components/client-rej-by-server/ministry_admin/SearchUserButton";
-import ViewAccessRequestsButton from "@/components/client-rej-by-server/ministry_admin/ViewAccessRequestsButton";
-import ViewDistrictAdminsButton from "@/components/client-rej-by-server/ministry_admin/ViewDistrictAdminsButton";
-import ViewFieldAgentsButton from "@/components/client-rej-by-server/ministry_admin/ViewFieldAgentsButton";
-import ViewParishAdminsButton from "@/components/client-rej-by-server/ministry_admin/ViewParishAdminsButton";
-import ViewSingleDistrictAdminButton from "@/components/client-rej-by-server/ministry_admin/ViewSingleDistrictAdminButton";
 import { isMinAdmin } from "@/lib/min_admin_funcs/functions";
 import { createClient } from "@/utils/supabase/server";
-import { InfoIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getUserAccType } from "../actions";
 import VerifiedMinAdmin from "@/components/min-admin/VerifiedMinAdmin";

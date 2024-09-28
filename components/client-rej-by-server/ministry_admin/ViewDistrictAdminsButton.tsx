@@ -7,6 +7,7 @@ import { RefreshCcw, TableOfContents } from "lucide-react";
 import Image from "next/image";
 import RevokeAccessButton from "./RevokeAccessButton";
 import ReGrantAccessButton from "./ReGrantAccessButton";
+import Link from "next/link";
 
 const supabase = createClient();
 
@@ -29,10 +30,7 @@ export default function ViewDistrictAdminsButton() {
     setIsLoading(true);
 
     try {
-      const loader = toast.loading("Processing your request", {
-        duration: 10000,
-      });
-
+     
       const requests = await fetch("/api/view-district-admins", {
         method: "GET",
       });
@@ -45,7 +43,6 @@ export default function ViewDistrictAdminsButton() {
         setRequests(parsedRequests.data);
       }
 
-      toast.dismiss(loader);
     } finally {
       setIsLoading(false);
     }
@@ -164,7 +161,7 @@ export default function ViewDistrictAdminsButton() {
                 </div>
                 {/* review section */}
               </div>
-              
+
               <div>
                 {review === request.email && (
                   <div className="flex flex-col md:flex-row md:px-3 border rounded-md animate-accordion-down md:py-2">
@@ -179,6 +176,7 @@ export default function ViewDistrictAdminsButton() {
                         />
                       )}
                     </div>
+
                     <div className="flex-col basis-2/3 p-8">
                       <p className="flex flex-col md:flex-row justify-between align-middle py-1">
                         <span className="font-semibold text-lg tracking-wide">
@@ -248,6 +246,13 @@ export default function ViewDistrictAdminsButton() {
                         </span>
                         {request.hasAccess ? "True" : "False"}
                       </p>
+
+                      <a
+                        href={`/protected/district_email/${request.email}`}
+                        className="text-blue-500 py-1"
+                      >
+                        See linked parish administrators
+                      </a>
                     </div>
                   </div>
                 )}

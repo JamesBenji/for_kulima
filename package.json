@@ -27,6 +27,7 @@
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.1",
     "react-text-gradients": "^1.0.2",
+    "sharp": "^0.33.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {

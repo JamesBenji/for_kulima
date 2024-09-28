@@ -106,19 +106,10 @@ export async function GET() {
         );
       }
 
-      if (isMin_admin.error) {
+      if (isMin_admin.error && isDistrict_admin.extra && isParish_admin.extra) {
         throw new Error("You are not authorized to execute this operation.");
       }
-      if (isDistrict_admin.extra) {
-        throw new Error(
-          "Server error. If this persists, please contact the system administrator"
-        );
-      }
-      if (isParish_admin.extra) {
-        throw new Error(
-          "Server error. If this persists, please contact the system administrator"
-        );
-      }
+      
     } else {
       throw new Error("Failed to get user session data");
     }

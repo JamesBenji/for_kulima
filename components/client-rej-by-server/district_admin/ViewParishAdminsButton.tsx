@@ -24,7 +24,6 @@
 //   );
 // }
 
-
 "use client";
 
 import { createClient } from "@/utils/supabase/client";
@@ -39,9 +38,7 @@ const supabase = createClient();
 
 export default function ViewAllParishAgentsButton() {
   const [isLoading, setIsLoading] = useState(false);
-  const [requests, setRequests] = useState<ParishAdminResponse[] | null>(
-    null
-  );
+  const [requests, setRequests] = useState<ParishAdminResponse[] | null>(null);
   const [review, setReview] = useState<string | null>(null);
 
   const toggleReviewSection = (id: string) => {
@@ -122,7 +119,8 @@ export default function ViewAllParishAgentsButton() {
       <div>
         {requests && requests?.length > 0 ? (
           <h1 className="font-semibold tracking-wide text-lg mb-4">
-            {requests?.length}&nbsp;Parish administrator{requests.length > 1 ? "s" : ""}{" "}
+            {requests?.length}&nbsp;Parish administrator
+            {requests.length > 1 ? "s" : ""}{" "}
           </h1>
         ) : (
           <h1 className="font-semibold tracking-wide text-lg my-4">
@@ -245,9 +243,7 @@ export default function ViewAllParishAgentsButton() {
                         <span className="font-semibold text-lg tracking-wide">
                           Allocation:{" "}
                         </span>{" "}
-                        {
-                          `${request.district} ${request.parish}`
-                        }
+                        {`${request.district} ${request.parish}`}
                       </p>
 
                       <p className="flex flex-col md:flex-row justify-between align-middle py-1">
@@ -267,7 +263,16 @@ export default function ViewAllParishAgentsButton() {
                         <span className="font-semibold text-lg tracking-wide">
                           Has system access:{" "}
                         </span>
-                        {request.hasAccess ? 'True' : "False"}
+                        {request.hasAccess ? "True" : "False"}
+                      </p>
+                      <p>
+                        <a
+                          href={`/protected/deep-retrieval-agent/${request.email}`}
+                          className="text-blue-500 py-1"
+
+                        >
+                          See linked field agents
+                        </a>
                       </p>
                     </div>
                   </div>

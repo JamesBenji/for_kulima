@@ -21,7 +21,7 @@ export async function GET() {
         const { data, error } = await supabase
           .from("farmers")
           .select(
-            "first_name, last_name, dob, email, tel, gender, household_size, no_children, count_school_going, average_income_per_harvest, other_income_sources, added_by, address"
+            "first_name, farmer_uid, last_name, dob, email, tel, gender, household_size, no_children, count_school_going, average_income_per_harvest, other_income_sources, added_by, address"
           );
 
         if (error) {
@@ -54,7 +54,7 @@ export async function GET() {
         const { data, error } = await supabase
           .from("farmers")
           .select(
-            "first_name, last_name, dob, email, tel, gender, household_size, no_children, count_school_going, average_income_per_harvest, other_income_sources, added_by, address"
+            "first_name, farmer_uid, last_name, dob, email, tel, gender, household_size, no_children, count_school_going, average_income_per_harvest, other_income_sources, added_by, address"
           )
           .eq("district", district);
 
@@ -86,7 +86,7 @@ export async function GET() {
         const { data, error } = await supabase
           .from("farmers")
           .select(
-            "first_name, last_name, dob, email, tel, gender, household_size, no_children, count_school_going, average_income_per_harvest, other_income_sources, added_by, address"
+            "first_name, last_name, farmer_uid, dob, email, tel, gender, household_size, no_children, count_school_going, average_income_per_harvest, other_income_sources, added_by, address"
           )
           .eq("district", myArea.district)
           .eq("parish", myArea.parish);

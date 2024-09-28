@@ -38,6 +38,7 @@ type FarmerResponse = {
   }[];
   added_by: string;
   address: string;
+  farmer_uid?: number;
 };
 
 type FarmResponse = {

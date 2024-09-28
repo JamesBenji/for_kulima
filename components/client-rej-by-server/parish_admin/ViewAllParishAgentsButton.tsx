@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import ReGrantAgentAccessButton from "./ReGrantAgentAccessButton";
 import RevokeAgentAccessButton from "./RevokeAgentAccessButton";
-import { BadgeAlert, RefreshCcw, TableOfContents } from "lucide-react";
+import { RefreshCcw, TableOfContents } from "lucide-react";
 import Image from "next/image";
 
 const supabase = createClient();
@@ -30,16 +30,16 @@ export default function ViewAllParishAgentsButton() {
   const makeAPIcall = async () => {
     setIsLoading(true);
     try {
-      const requests = await fetch("/api/view-all-parish-agents", {
+      const requests = await fetch("/api/view-field-agents", {
         method: "GET",
-      });
+      });   
 
       const parsedRequests = await requests.json();
 
       if (parsedRequests.error) return toast.error(parsedRequests.error);
 
       if (!parsedRequests.error) {
-        setRequests(parsedRequests.allParishAgents);
+        setRequests(parsedRequests.data);
       }
     } finally {
       setIsLoading(false);

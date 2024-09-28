@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/client";
 import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { RefreshCcw, TableOfContents } from "lucide-react";
+import Link from "next/link";
 
 const supabase = createClient();
 
@@ -19,7 +20,6 @@ export default function ViewAllFarmersButton() {
   useEffect(() => {
     setRequests(requests_data);
   }, [requests_data]);
-
 
   const toggleReviewSection = (id: string) => {
     if (review) {
@@ -77,7 +77,6 @@ export default function ViewAllFarmersButton() {
   const handleFirstNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setFirstName(event.target.value);
   };
-  
 
   useEffect(() => {
     if (firstName) {
@@ -89,7 +88,7 @@ export default function ViewAllFarmersButton() {
           : null;
       });
     } else {
-      setRequests(requests_data)
+      setRequests(requests_data);
     }
   }, [firstName]);
 
@@ -212,7 +211,7 @@ export default function ViewAllFarmersButton() {
                       </p>
                       <p className="flex flex-col md:flex-row justify-between align-middle py-[2px]">
                         <span className="font-semibold text-lg tracking-wide">
-                          Household size:&nbsp;
+                          size:&nbsp;
                         </span>
                         {request?.household_size
                           ? request?.household_size
@@ -299,6 +298,12 @@ export default function ViewAllFarmersButton() {
                         </span>
                         {request?.added_by ? request?.added_by : "Undefined"}
                       </p>
+
+                      <a
+                        href={`/protected/deep-retrieval/${request.farmer_uid}`}
+                      >
+                        See farms
+                      </a>
                     </div>
                   </div>
                 )}

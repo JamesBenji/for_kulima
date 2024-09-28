@@ -16,7 +16,7 @@ export default function SignUpUserSteps() {
           page and sign up to create an account and access this system. If you
           already have an account,{" "}
           <a
-            href="/sign-up"
+            href="/sign-in"
             className="font-bold hover:underline text-foreground/80"
           >
             sign in

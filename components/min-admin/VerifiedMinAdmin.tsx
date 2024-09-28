@@ -10,6 +10,7 @@ import ViewParishAdminsButton from "../client-rej-by-server/district_admin/ViewP
 import ViewParishAccessRequestsButton from "../client-rej-by-server/district_admin/ViewParishAccessRequestsButton";
 import ViewDistrictAdminsButton from "../client-rej-by-server/ministry_admin/ViewDistrictAdminsButton";
 import ViewAccessRequestsButton from "../client-rej-by-server/ministry_admin/ViewAccessRequestsButton";
+import ViewAllParishAgentsButton from "../client-rej-by-server/parish_admin/ViewAllParishAgentsButton";
 
 const supabase = createClient();
 
@@ -50,6 +51,10 @@ function VerifiedMinAdmin() {
     {
       name: "View parish admins",
       component: <ViewParishAdminsButton />,
+    },
+    {
+      name: "View field agents",
+      component: <ViewAllParishAgentsButton />,
     },
     {
       name: "View farmers",
