@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { usePathname } from "next/navigation";
 import { LinearGradient } from "react-text-gradients";
+import toast from "react-hot-toast";
 
 const supabase = createClient();
 
@@ -54,6 +55,7 @@ export default function AuthButton() {
         size="sm"
         variant={"default"}
         className="bg-white text-black hover:bg-black/5"
+        onClick={() => toast('Signing you out', {duration: 3500})}
       >
         <a href="/sign-up">Sign up</a>
       </Button>

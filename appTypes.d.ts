@@ -39,6 +39,7 @@ type FarmerResponse = {
   added_by: string;
   address: string;
   farmer_uid?: number;
+  image?: string;
 };
 
 type FarmResponse = {
@@ -98,6 +99,7 @@ type ParishAdminResponse = {
   parish: string;
   hasAccess: boolean;
   image: string;
+  sys_role?: string;
 };
 
 type ApplicantFields = {

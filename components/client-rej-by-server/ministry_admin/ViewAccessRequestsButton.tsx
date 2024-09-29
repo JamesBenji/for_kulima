@@ -6,6 +6,8 @@ import toast from "react-hot-toast";
 import GrantAccessButton from "./GrantAccessButton";
 import Image from "next/image";
 import { BadgeAlert, RefreshCcw } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Span } from "next/dist/trace";
 
 const supabase = createClient();
 
@@ -15,7 +17,8 @@ export default function ViewAccessRequestsButton() {
     null
   );
   const [review, setReview] = useState<string | null>(null);
-  
+  const router = useRouter();
+
   const toggleReviewSection = (id: string) => {
     if (review) {
       setReview((prev) => {
@@ -25,7 +28,6 @@ export default function ViewAccessRequestsButton() {
       setReview(id);
     }
   };
-
 
   const makeAPIcall = async () => {
     setIsLoading(true);
@@ -129,11 +131,25 @@ export default function ViewAccessRequestsButton() {
                 <div className="flex basis-1/4 align-middle justify-center p-2">
                   <button
                     className="border-2 px-4 bg-blue-500 rounded-lg"
-                    onClick={() => toggleReviewSection(request.requestor_email)}
+                    onClick={() => {
+                      // toggleReviewSection(request.requestor_email);
+                      setIsLoading(true);
+                      localStorage.setItem(
+                        "currentRequest",
+                        JSON.stringify(request)
+                      );
+                      router.push("/protected/details/access-request");
+                    }}
                   >
                     <div className="flex flex-row justify-around align text-white">
-                      <BadgeAlert className="text-white" />
-                      &nbsp;&nbsp; Review request
+                      {isLoading ? (
+                        "Opening"
+                      ) : (
+                        <span className="flex flex-row justify-around align text-white">
+                          <BadgeAlert className="text-white" />
+                          &nbsp;&nbsp; Review request
+                        </span>
+                      )}
                     </div>
                   </button>
                 </div>

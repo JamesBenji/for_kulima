@@ -4,6 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import toast from "react-hot-toast";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -160,7 +161,8 @@ export const getUserAccType = async (user_email: string) => {
     .maybeSingle();
 
   if (error) {
-    console.log({ getUserAccTypeError: error });
+    // console.log({ getUserAccTypeError: error });
+    toast.error('Error: Could not retrieve account type')
   }
 
   return data?.sys_role;

@@ -4,19 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import React from "react";
 
 async function ApplicantDetails() {
-  // const data: AccountApplicationData = {
-  //   first_name: "Benjamin",
-  //   last_name: "James",
-  //   requestor_email: "johnduran@gmail.com",
-  //   phone_number: ["0764277121"],
-  //   organization: "NEMA",
-  //   position: "Senior administrator",
-  //   gender: "Male",
-  //   allocation: "Kampala",
-  //   requested_position: "parish_admin",
-  // };
 
-  // check if applied
   const supabase = createClient();
 
 

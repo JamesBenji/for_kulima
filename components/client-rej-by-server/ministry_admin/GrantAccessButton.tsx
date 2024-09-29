@@ -25,7 +25,7 @@ export default function GrantAccessButton({
 
       const response = await fetch("/api/grant-access-district", {
         method: "POST",
-        body: JSON.stringify({target_mail: 'test@gmail.com'})
+        body: JSON.stringify({target_mail: email})
       });
 
       
@@ -36,6 +36,8 @@ export default function GrantAccessButton({
       if (data.error) return toast.error(data.error);
 
       toast.success("Access granted successfully!");
+
+      refresh()
       
     } finally {
       setIsLoading(false);

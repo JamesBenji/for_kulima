@@ -40,7 +40,6 @@ export default function ApplicantForm() {
   const validateForm = () => {
     let newErrors: FormErrors = {};
 
-    // Validate required fields
     (
       [
         "first_name",
@@ -90,58 +89,11 @@ export default function ApplicantForm() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  //   const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //     const { value } = e.target;
-  //     setFormData((prev) => ({ ...prev, [phone_number]: value }));
-  //   };
 
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  //   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //     const file = e.target.files?.[0];
-  //     if (file) {
-  //       setFormData((prev) => ({ ...prev, image: file }));
-  //       const reader = new FileReader();
-  //       reader.onloadend = () => {
-  //         setImagePreview(reader.result as string);
-  //       };
-  //       reader.readAsDataURL(file);
-  //     }
-  //   };
-
-  //   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-  //     e.preventDefault();
-  //     if (validateForm()) {
-  //       // Create a FormData object to handle file upload
-  //       const formDataToSend = new FormData();
-  //       Object.entries(formData).forEach(([key, value]) => {
-  //         if (key === "phone_number") {
-  //           formDataToSend.append(key, value[0]);
-  //         } else if (key === "image" && value instanceof File) {
-  //           formDataToSend.append(key, value, value.name);
-  //         } else if (value !== null && value !== undefined) {
-  //           formDataToSend.append(key, value.toString());
-  //         }
-  //       });
-
-  //       //   console.log('Form submitted:', formDataToSend);
-  //       // Here you would typically send the formDataToSend to your backend
-  //       // Example: axios.post('/api/submit-application', formDataToSend)
-  //       const logObject: Record<string, string | File | null> = {};
-  //       console.log("Form values to be submitted:");
-  //       Object.entries(logObject).forEach(([key, value]) => {
-  //         if (key === "image" && value instanceof File) {
-  //           console.log(
-  //             `${key}: File - ${value.name} (${value.type}, ${value.size} bytes)`
-  //           );
-  //         } else {
-  //           console.log(`${key}: ${value}`);
-  //         }
-  //       });
-  //     }
-  //   };
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -183,14 +135,16 @@ export default function ApplicantForm() {
         }
       });
 
-      // Here you would typically send the formDataToSend to your backend
-      // Example: axios.post('/api/submit-application', formDataToSend)
 
       toast.loading('Saving your data', {duration: 3000})
       fetch("/api/register-applicant", {
         method: "POST",
         body: formDataToSend,
-      }).then(() => {});
+      }).then(() => {
+        toast.success('Access request made successfully', {duration: 3000});
+        window.location.replace('/protected')
+        window.location.reload()
+      });
     }
   };
 

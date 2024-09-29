@@ -6,9 +6,7 @@ export default function ParishFromDistrictEmail({params} : {params: {district_em
 
     const district_email = useMemo(() => params?.district_email, [params])
   return (
-    <div>page
-        {String(params?.district_email)}
-
+    <div>
         <ParishAdminFromDistrictAdmin email={district_email}/>
     </div>
     

@@ -12,6 +12,7 @@ export default function FarmsFromFarmer({ farmer_uid }: FarmsFromFarmerProps) {
   const [farms, setFarms] = useState<FarmResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showGallery, setShowGallery] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchFarms = async () => {
@@ -62,11 +63,42 @@ export default function FarmsFromFarmer({ farmer_uid }: FarmsFromFarmerProps) {
     <div>
       {farms.length > 0 &&
         farms?.map((farm, index) => (
-          <Card key={index} className="mx-auto flex flex-col align-middle justify-center">
+          <Card
+            key={index}
+            className="mx-auto flex flex-col align-middle justify-center"
+          >
             <CardHeader>
-              <CardTitle className="max-w-prose mx-auto">{farm?.farm_name}</CardTitle>
+              <CardTitle className="max-w-prose mx-auto text-3xl">
+                {farm?.farm_name}
+              </CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="max-w-prose mx-auto">
+                <button
+                  className="text-blue-500 my-2"
+                  onClick={() => setShowGallery(!showGallery)}
+                >
+                  {showGallery ? "Hide images" : "Show farm pictures"}
+                </button>
+                {showGallery && (
+                  <div className="animate-accordion-down">
+                    <h1 className="text-2xl text-gray-600 my-2">Gallery</h1>
+                    <div className="flex flex-row gap-5">
+                      {farm.images?.map((url) => (
+                        <div className="flex flex-col flex-wrap align-middle justify-center h-[200px] w-[200px] bg-gray-300">
+                          <Image
+                            alt="Farm image"
+                            width={200}
+                            height={200}
+                            src={url}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="max-w-prose mx-auto">
                 {farms
                   ?.sort((a, b) => a?.farm_name?.localeCompare(b.farm_name))
@@ -74,86 +106,83 @@ export default function FarmsFromFarmer({ farmer_uid }: FarmsFromFarmerProps) {
                     <div key={request?.image_file_name}>
                       <div>
                         <div className="flex flex-col px-3 animate-accordion-down animate-in">
-                          
                           <div className="flex-col">
                             <p className="flex flex-col justify-between align-middle py-2">
                               {" "}
-                              <span className="font-semibold text-lg tracking-wide">
-                                Land size:&nbsp;
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                LAND SIZE:&nbsp;
                               </span>
                               {`${request?.land_size} ${request?.land_units}` ||
                                 "Undefined"}
                             </p>
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Location:&nbsp;
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                LOCATION:&nbsp;
                               </span>
                               {request?.location}
                             </p>
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Crops:&nbsp;
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                CROPS:&nbsp;
                               </span>
                               {request?.crops
                                 ? request?.crops.map((crop) => (
-                                    <div>
-                                      <span>{crop}</span>
+                                    <div className="px-2">
+                                      <li>{crop}</li>
                                     </div>
                                   ))
                                 : "Undefined"}
                             </p>
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Average quantity produced per harvest:&nbsp;
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                AVERAGE QUANTITY PER HARVEST:&nbsp;
                               </span>
                               {request?.average_quantity_produced}{" "}
                               {request?.quantity_units}
                             </p>
 
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Uses mechanization:&nbsp;
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                FARM IS MECHANIZED:&nbsp;
                               </span>
-                              {request?.is_currently_mechanized
-                                ? request?.is_currently_mechanized
-                                : "Undefined"}
+                              {request?.is_currently_mechanized ? "Yes" : "No"}
                             </p>
 
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Current machinery:&nbsp;
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                CURRENT MACHINERY:&nbsp;
                               </span>
                               {request?.current_machinery
                                 ? request?.current_machinery?.map((machine) => (
                                     <div>
-                                      <span>
+                                      <li>
                                         {machine.machine_name.toLocaleUpperCase()}{" "}
                                         for {machine.purpose}
-                                      </span>
+                                      </li>
                                     </div>
                                   ))
                                 : "Undefined"}
                             </p>
 
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Used mechanization:&nbsp;
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                USED MECHANIZATION:&nbsp;
                               </span>
-                              {request?.previously_mechanized || "Undefined"}
+                              {request?.previously_mechanized ? "Yes" : "No"}
                             </p>
 
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Previous machinery:&nbsp;
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                PREVIOUS MACHINERY:&nbsp;
                               </span>
                               {request?.previous_machinery
                                 ? request?.previous_machinery?.map(
                                     (machine) => (
                                       <div>
-                                        <span>
+                                        <li>
                                           {machine.machine_name.toLocaleUpperCase()}{" "}
                                           for {machine.purpose}
-                                        </span>
+                                        </li>
                                       </div>
                                     )
                                   )
@@ -161,8 +190,8 @@ export default function FarmsFromFarmer({ farmer_uid }: FarmsFromFarmerProps) {
                             </p>
 
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Labourers:{" "}
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                LABOURERS:{" "}
                               </span>{" "}
                               {request?.labourers
                                 ? request?.labourers
@@ -170,39 +199,39 @@ export default function FarmsFromFarmer({ farmer_uid }: FarmsFromFarmerProps) {
                             </p>
 
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Pests:{" "}
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                PESTS:{" "}
                               </span>{" "}
                               {request?.pests
                                 ? request?.pests?.map((pest) => (
                                     <div>
-                                      <span>
+                                      <li>
                                         {pest.pest_name} causes {pest.effect}
-                                      </span>
+                                      </li>
                                     </div>
                                   ))
                                 : "Undefined"}
                             </p>
 
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Pest control:{" "}
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                PEST CONTROL:{" "}
                               </span>{" "}
                               {request?.pests
                                 ? request?.pest_control?.map((control) => (
                                     <div>
-                                      <span>
+                                      <li>
                                         {control.control_measure} for{" "}
                                         {control.pest}
-                                      </span>
+                                      </li>
                                     </div>
                                   ))
                                 : "Undefined"}
                             </p>
 
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Water contaminant{"(s)"}:
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                WATER CONTAMINANT{"(s)"}:
                               </span>
 
                               {!request?.water_contaminants?.length ? (
@@ -213,10 +242,10 @@ export default function FarmsFromFarmer({ farmer_uid }: FarmsFromFarmerProps) {
                                 <div>
                                   {request?.water_contaminants?.map(
                                     (contaminant) => (
-                                      <span>
+                                      <li>
                                         {contaminant.contaminant} causes{" "}
                                         {contaminant.effect}
-                                      </span>
+                                      </li>
                                     )
                                   )}
                                 </div>
@@ -224,40 +253,41 @@ export default function FarmsFromFarmer({ farmer_uid }: FarmsFromFarmerProps) {
                             </p>
 
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Land use:{" "}
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                LAND USE:{" "}
                               </span>
                               {request?.land_use
                                 ? request?.land_use?.map((use) => (
-                                    <div className="flex flex-col justify-between align-middle">
-                                      <span>{use.crop}&nbsp;</span>
+                                    <li className="flex flex-col justify-between align-middle">
+                                      <span>
+                                        {use.crop}&nbsp;{"\t"}
+                                      </span>
                                       <span>
                                         {use.land_size} {request.land_units}
                                       </span>
-                                      <br />
-                                    </div>
+                                    </li>
                                   ))
                                 : "Undefined"}
                             </p>
 
                             <p className="flex flex-col justify-between align-middle py-2">
                               {" "}
-                              <span className="font-semibold text-lg tracking-wide">
-                                Other income sources:
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                FERTILIZERS:
                               </span>
                               {!request?.fertilizers?.length ? (
                                 "Undefined"
                               ) : request?.fertilizers?.length === 1 ? (
                                 <span>
                                   {request?.fertilizers?.[0].type ? (
-                                    <div>
+                                    <li>
                                       <span>
-                                        {request?.fertilizers?.[0].type}
+                                        {request?.fertilizers?.[0].type} {"\t"}
                                       </span>
                                       <span>
                                         {request?.fertilizers?.[0].frequency}
                                       </span>
-                                    </div>
+                                    </li>
                                   ) : (
                                     "Undefined"
                                   )}{" "}
@@ -267,23 +297,22 @@ export default function FarmsFromFarmer({ farmer_uid }: FarmsFromFarmerProps) {
                                   <>
                                     <span key={source.type}>
                                       {source.type ? (
-                                        <div>
-                                          <span>{source.type}</span>
+                                        <li>
+                                          <span>{source.type}</span> {"\t"}
                                           <span>{source.frequency}</span>
-                                        </div>
+                                        </li>
                                       ) : (
                                         "Undefined"
                                       )}
                                     </span>{" "}
-                                    <br />
                                   </>
                                 ))
                               )}
                             </p>
 
                             <p className="flex flex-col justify-between align-middle py-2">
-                              <span className="font-semibold text-lg tracking-wide">
-                                Added by:{" "}
+                              <span className="font-semibold text-lg tracking-normal text-gray-500">
+                                ADDED BY:{" "}
                               </span>
                               {request?.added_by
                                 ? request?.added_by

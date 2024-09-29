@@ -36,7 +36,7 @@ export async function viewAccessRequests(
   const { data: accessRequests, error } = await supabase
     .from("district_account_requests")
     .select(
-      "created_at, requestor_email, requested_position, first_name, last_name, phone_number, organization, position, gender, granted_as"
+      "created_at, requestor_email,image, requested_position, first_name, last_name, phone_number, organization, position, gender, granted_as"
     )
     .eq("granted_as", "null");
 
@@ -115,7 +115,7 @@ export async function viewAllDistrictAdmins(
   const { data: allDistrictAdmins, error } = await supabase
     .from("district_admin")
     .select(
-      "created_at, email, first_name, image, last_name, phone_number, organization, position, gender, allocation, granted_by, hasAccess"
+      "created_at, email, first_name, sys_role, image, last_name, phone_number, organization, position, gender, allocation, granted_by, hasAccess"
     );
 
   if (error) return { error };

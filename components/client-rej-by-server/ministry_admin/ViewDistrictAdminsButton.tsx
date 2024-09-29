@@ -7,7 +7,7 @@ import { RefreshCcw, TableOfContents } from "lucide-react";
 import Image from "next/image";
 import RevokeAccessButton from "./RevokeAccessButton";
 import ReGrantAccessButton from "./ReGrantAccessButton";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const supabase = createClient();
 
@@ -16,21 +16,20 @@ export default function ViewDistrictAdminsButton() {
   const [requests, setRequests] = useState<ParishAdminResponse[] | null>(null);
   const [review, setReview] = useState<string | null>(null);
 
-  const toggleReviewSection = (id: string) => {
-    if (review) {
-      setReview((prev) => {
-        return prev === id ? null : id;
-      });
-    } else {
-      setReview(id);
-    }
-  };
+  // const toggleReviewSection = (id: string) => {
+  //   if (review) {
+  //     setReview((prev) => {
+  //       return prev === id ? null : id;
+  //     });
+  //   } else {
+  //     setReview(id);
+  //   }
+  // };
 
   const makeAPIcall = async () => {
     setIsLoading(true);
 
     try {
-     
       const requests = await fetch("/api/view-district-admins", {
         method: "GET",
       });
@@ -42,7 +41,6 @@ export default function ViewDistrictAdminsButton() {
       if (!parsedRequests.error) {
         setRequests(parsedRequests.data);
       }
-
     } finally {
       setIsLoading(false);
     }
@@ -69,6 +67,8 @@ export default function ViewDistrictAdminsButton() {
       supabase.removeChannel(channels);
     };
   }, []);
+
+  const router = useRouter();
 
   return (
     <div>
@@ -137,7 +137,15 @@ export default function ViewDistrictAdminsButton() {
                     <div className="bg-blue-800 mb-4 md:mb-0 w-full md:w-fit p-[1.5px] rounded-lg">
                       <button
                         className="px-5 py-2 rounded-lg w-full md:w-fit border-white border-[1px] shadow-sm hover:underline bg-blue-200 text-blue-800"
-                        onClick={() => toggleReviewSection(request.email!)}
+                        onClick={() => {
+                          // toggleReviewSection(request.email!);
+                          // const queryStr = new URLSearchParams({
+                          //   JSONparams: JSON.stringify(request)
+                          // }).toString()
+                          // setCurrentDetails(request)
+                          localStorage.setItem('currentDetails', JSON.stringify(request))
+                          router.push('/protected/details/admin')
+                        }}
                       >
                         <div className="flex flex-row align-middle justify-center md:justify-start">
                           <TableOfContents className="text-blue-800" />
