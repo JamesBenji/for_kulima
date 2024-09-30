@@ -20,22 +20,6 @@ const headingKeys = [
   "farmer_uid",
 ];
 
-const formattedKey = (key: string) => {
-  let temp = key;
-
-  if (temp === "created_at") {
-    temp = "User since";
-  }
-  if (temp === "hasAccess") {
-    temp = "has access";
-  }
-
-  if (temp.includes("_")) {
-    temp = temp.split("_").reduce((a, b) => `${a} ${b}`);
-  }
-
-  return temp.toLocaleUpperCase();
-};
 
 function getMonthName(monthNumber: number): string {
   const monthNames = [
@@ -56,21 +40,6 @@ function getMonthName(monthNumber: number): string {
   return monthNames[monthNumber];
 }
 
-const formattedValue = (value: any, key: string) => {
-  if (typeof value === "boolean") {
-    return value ? "Yes" : "No";
-  }
-
-  if (key === "created_at" || key === "granted_on") {
-    const date = new Date(value);
-    const time_with_offset_date = date.getTime() + 3 * 60 * 60 * 1000;
-    const time_with_offset = new Date(time_with_offset_date);
-
-    return `${getMonthName(time_with_offset.getMonth())} ${time_with_offset.getDate()}, ${time_with_offset.getFullYear()} at ${time_with_offset.getHours()}:${time_with_offset.getMinutes()}`;
-  }
-
-  return value;
-};
 
 const generateColumnArrays = (arr: string[] | undefined) => {
   if (arr) {

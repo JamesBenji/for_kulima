@@ -7,9 +7,10 @@ import Link from "next/link";
 
 export default function Login({ searchParams }: { searchParams: Message }) {
   return (
-    <div className="m-auto w-full mt-10 md:flex md:flex-row md:justify-center md:align-middle md:mt-10 md:mx-auto md:pl-20 md:h-[60vh]  p-10 md:p-0">
-      <div className="">
-        <form className="flex-1 flex flex-col md:min-w-96 max-w-96">
+    // <div className="m-auto w-full  md:flex md:flex-row md:justify-center md:align-middle p-10 bg-green-400">
+    <div className="absolute inset-0 flex align-middle justify-center" >
+      <div className="m-auto w-full px-6 md:p-5 md:max-w-fit">
+        <form className="flex-1 flex flex-col md:min-w-96 max-w-full">
           <h1 className="text-2xl font-medium">Sign in</h1>
 
           <p className="text-sm text-foreground">
@@ -47,7 +48,6 @@ export default function Login({ searchParams }: { searchParams: Message }) {
               Sign in
             </SubmitButton>
             <FormMessage message={searchParams} />
-
           </div>
         </form>
       </div>

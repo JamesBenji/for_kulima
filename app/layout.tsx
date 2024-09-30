@@ -5,6 +5,7 @@ import Link from "next/link";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Footer from "@/components/Footer";
+import { ArrowUpRight, CircleArrowOutUpRight } from "lucide-react";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -39,15 +40,16 @@ export default function RootLayout({
               <nav className=" w-full flex justify-center border-b border-b-foreground/10 h-16">
                 <div className="w-full md:max-w-5xl flex justify-between items-center md:p-3 md:px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold  rounded-md">
-                    <Link href={"/"} className="text-lg px-5 ">
+                    <Link href={"/"} className="text-xl md:text-2xl px-5 md:px-0 flex align-text-bottom">
                       Kulima
+                      <ArrowUpRight size={14} strokeWidth={3} className=""/>
                     </Link>
                   </div>
                   <HeaderAuth />
                 </div>
               </nav>
 
-              <div className="flex-1 flex flex-col relative flex-grow  w-full ">
+              <div className="flex-1 flex flex-col relative flex-grow  w-full">
                 {children}
               </div>
 

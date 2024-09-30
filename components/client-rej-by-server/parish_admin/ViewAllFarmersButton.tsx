@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getUserAccType } from "@/app/actions";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 const supabase = createClient();
 
@@ -78,7 +79,7 @@ export default function ViewAllFarmersButton() {
   }, []);
 
   const handleFirstNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFirstName(event.target.value);
+    setFirstName(event.target.value.trim());
   };
 
   useEffect(() => {
@@ -95,9 +96,6 @@ export default function ViewAllFarmersButton() {
     }
   }, [firstName]);
 
-  useEffect(() => {
-    console.log({ logreq: JSON.stringify(requests?.[0], null, 4) });
-  }, [requests]);
 
   return (
     <div>
@@ -107,9 +105,17 @@ export default function ViewAllFarmersButton() {
             type="text"
             name="first_name"
             onChange={handleFirstNameChange}
-            placeholder="Enter the first name"
+            placeholder="Search by name"
             className="w-full border-2 border-gray-300 rounded-md p-2"
           />
+          {/* <Input
+          id="first_name"
+          name="first_name"
+          placeholder="Search by name"
+          maxLength={20}
+          onChange={handleFirstNameChange}
+          type="text"
+        /> */}
         </div>
         <button
           className="bg-gray-300 text-gray-500 w-fit px-5 py-2 rounded-lg"

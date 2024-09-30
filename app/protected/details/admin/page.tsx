@@ -134,7 +134,7 @@ export default function AdministratorDetailsView() {
 
 
   return (
-    <div className="w-full overflow-hidden md:min-w-fit md:max-w-80 mx-auto my-5">
+    <div className="w-full overflow-hidden md:min-w-fit md:max-w-screen-md mx-auto my-5">
       {/* heading */}
       <p className="font-semibold tracking-normal md:text-2xl text-center py-5">
         <LinearGradient gradient={["to left", "#17acff ,#17acff ,#00ff00"]}>
@@ -173,7 +173,7 @@ export default function AdministratorDetailsView() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex md:flex-row">
+          <div className="flex flex-col md:flex md:flex-row md:justify-between">
             {/* col 1 */}
             <div className="flex flex-col overflow-x-hidden">
               {columnArrays[0].map((key) => (

@@ -156,7 +156,7 @@ export default function FieldAgentsFromParishAdmin({
           ?.map((currentDetails: any) => (
             <div
               key={currentDetails.email}
-              className="w-full overflow-hidden md:min-w-fit md:max-w-80 mx-auto my-5"
+              className="w-full overflow-hidden md:min-w-fit md:max-w-screen-md mx-auto my-5"
             >
               {/* body */}
               <Card className="md:mx-auto w-full overflow-hidden flex flex-col align-middle justify-center">
@@ -189,7 +189,7 @@ export default function FieldAgentsFromParishAdmin({
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-col md:flex md:flex-row">
+                  <div className="flex flex-col md:flex md:flex-row md:justify-between">
                     {/* col 1 */}
                     <div className="flex flex-col overflow-x-hidden">
                       {columnArrays[0].map((key) => (

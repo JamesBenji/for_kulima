@@ -6,27 +6,44 @@ import { createClient } from "@/utils/supabase/client";
 import { usePathname } from "next/navigation";
 import { LinearGradient } from "react-text-gradients";
 import toast from "react-hot-toast";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Loader2 } from "lucide-react";
 
-const supabase = createClient();
+const getEmail = async (supabase: SupabaseClient<any, "public", any>) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return user?.email;
+};
 
 export default function AuthButton() {
-  const [user, setUser] = useState<any | null>(null);
+  const supabase = createClient();
+  const [email, setEmail] = useState<string | null | undefined>(null);
+  const [num, setNum] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    fetchUser();
+    setNum(Math.random() * 5);
+  }, [email]);
+
+  useEffect(() => {
+    setLoading(true);
+    getEmail(supabase)
+      .then((response) => {
+        setEmail(response);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
-  const pathname = usePathname();
-  const isProtectedRoute = pathname.includes("/protected");
-  const email = useMemo(() => user?.email, [user]);
+  if (loading && pathname.includes("/protected")) {
+    return <Loader2 size={20} className="animate-spin" />;
+  }
 
-  return isProtectedRoute ? (
+  return pathname.includes("/protected") ? (
     <div className="flex items-center md:gap-4 mr-2">
       <span className="hidden md:block">
         <LinearGradient gradient={["to left", "#17acff ,#17acff ,#00ff00"]}>
@@ -45,7 +62,7 @@ export default function AuthButton() {
       </form>
     </div>
   ) : (
-    <div className="flex gap-2">
+    <div className="flex gap-2 mx-2 md:mx-0">
       <Button
         asChild
         size="sm"
@@ -58,7 +75,7 @@ export default function AuthButton() {
         asChild
         size="sm"
         variant={"default"}
-        className="bg-white text-black hover:bg-black/5"
+        className="bg-white text-black light:hover:bg-black/5 hover:text-white dark:hover:text-black"
       >
         <a href="/sign-up">Sign up</a>
       </Button>

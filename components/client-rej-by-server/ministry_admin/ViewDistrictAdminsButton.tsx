@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createClient } from "@/utils/supabase/client";
 import { RefreshCcw, TableOfContents } from "lucide-react";
@@ -9,13 +9,18 @@ import RevokeAccessButton from "./RevokeAccessButton";
 import ReGrantAccessButton from "./ReGrantAccessButton";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const supabase = createClient();
 
 export default function ViewDistrictAdminsButton() {
   const [isLoading, setIsLoading] = useState(false);
   const [requests, setRequests] = useState<ParishAdminResponse[] | null>(null);
+  const [displayReqs, setDisplayReqs] = useState<
+    ParishAdminResponse[] | null | undefined
+  >(null);
   const [review, setReview] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState<string | null>(null);
 
   const makeAPIcall = async () => {
     setIsLoading(true);
@@ -36,6 +41,10 @@ export default function ViewDistrictAdminsButton() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    setDisplayReqs(requests);
+  }, [requests]);
 
   useEffect(() => {
     makeAPIcall();
@@ -61,9 +70,37 @@ export default function ViewDistrictAdminsButton() {
 
   const router = useRouter();
 
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setFirstName(value.trim())
+    return;
+  };
+
+  useEffect(() => {
+    if (firstName) {
+      setDisplayReqs((prev) => {
+        return prev
+          ? prev?.filter((item) =>
+              item.first_name.toLowerCase().includes(firstName.toLowerCase()) || item.last_name.toLowerCase().includes(firstName.toLowerCase())
+            )
+          : null;
+      });
+    } else {
+      setDisplayReqs(requests);
+    }
+  }, [firstName]);
+
   return (
     <div>
-      <div className="w-full mb-4 md:flex md:flex-row md:mb-4">
+      <div className="w-full mb-4 md:flex md:flex-row md:mb-4 gap-2">
+        <Input
+          id="first_name"
+          name="first_name"
+          placeholder="Search by name"
+          maxLength={20}
+          onChange={handleInputChange}
+          type="text"
+        />
         <button
           className="bg-gray-300 text-gray-500 px-5 py-2 rounded-lg"
           onClick={makeAPIcall}
@@ -86,17 +123,17 @@ export default function ViewDistrictAdminsButton() {
       </div>
 
       <div>
-        {requests && requests?.length > 0 ? (
+        {displayReqs && displayReqs?.length > 0 ? (
           <h1 className="font-semibold tracking-wide text-lg mb-4">
-            {requests?.length}&nbsp;District administrator
-            {requests.length > 1 ? "s" : ""}{" "}
+            {displayReqs?.length}&nbsp;District administrator
+            {displayReqs.length > 1 ? "s" : ""}{" "}
           </h1>
         ) : (
           <h1 className="font-semibold tracking-wide text-lg my-4">
             There are no district administrators.
           </h1>
         )}
-        {requests
+        {displayReqs
           ?.sort((a, b) => a.first_name.localeCompare(b.first_name))
           .map((request) => (
             <div key={request.email} className="my-2">
@@ -138,10 +175,7 @@ export default function ViewDistrictAdminsButton() {
                       }}
                     >
                       <div className="flex flex-row align-middle justify-center md:justify-start gap-1">
-                        <TableOfContents
-                          size={20}
-                          className=""
-                        />
+                        <TableOfContents size={20} className="" />
                         <span>&nbsp;View details</span>
                       </div>
                     </Button>
@@ -149,16 +183,16 @@ export default function ViewDistrictAdminsButton() {
                     {request.hasAccess ? (
                       <div>
                         <RevokeAccessButton
-                        refresh={makeAPIcall}
-                        email={request.email!}
-                      />
+                          refresh={makeAPIcall}
+                          email={request.email!}
+                        />
                       </div>
                     ) : (
                       <div>
                         <ReGrantAccessButton
-                        email={request.email!}
-                        refresh={makeAPIcall}
-                      />
+                          email={request.email!}
+                          refresh={makeAPIcall}
+                        />
                       </div>
                     )}
                   </div>
