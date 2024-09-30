@@ -26,8 +26,8 @@ const formattedKey = (key: string) => {
     temp = "has access";
   }
 
-  if (temp.includes("_")) {
-    temp = temp.split("_").reduce((a, b) => `${a} ${b}`);
+  if (temp?.includes("_")) {
+    temp = temp?.split("_").reduce((a, b) => `${a} ${b}`);
   }
 
   return temp.toLocaleUpperCase();
@@ -65,9 +65,9 @@ const formattedValue = (value: any, key: string) => {
     return `${getMonthName(time_with_offset.getMonth())} ${time_with_offset.getDate()}, ${time_with_offset.getFullYear()} at ${time_with_offset.getHours()}:${time_with_offset.getMinutes()}`;
   }
 
-  if (value.includes("_")) {
-    value = value.split("_").reduce((a: any, b: any) => `${a} ${b}`);
-    return value.toLocaleUpperCase();
+  if (value?.includes("_")) {
+    value = value?.split("_").reduce((a: any, b: any) => `${a} ${b}`);
+    return value?.toLocaleUpperCase();
   }
 
 
