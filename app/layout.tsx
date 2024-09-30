@@ -47,7 +47,7 @@ export default function RootLayout({
                 </div>
               </nav>
 
-              <div className="flex-1 flex flex-col relative bg-white flex-grow  w-full ">
+              <div className="flex-1 flex flex-col relative flex-grow  w-full ">
                 {children}
               </div>
 

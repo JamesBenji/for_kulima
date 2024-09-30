@@ -161,7 +161,6 @@ export const getUserAccType = async (user_email: string) => {
     .maybeSingle();
 
   if (error) {
-    // console.log({ getUserAccTypeError: error });
     toast.error('Error: Could not retrieve account type')
   }
 

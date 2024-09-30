@@ -1,6 +1,7 @@
 "use client";
 
 import ConfirmOverlay from "@/components/ConfirmOverlay";
+import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -51,22 +52,22 @@ export default function ReGrantAgentAccessButton({
 
   return (
     <div>
-      <div className="bg-green-700 w-full md:w-fit p-[1.5px] rounded-lg">
-        <button
-          className="px-5 py-2 rounded-lg w-full md:w-fit text-green-700 border-white border-[1px] shadow-sm hover:underline bg-green-300 "
-          onClick={() => setShowPopover(!showPopOver)}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            "Loading..."
-          ) : (
-            <div className="flex flex-row justify-center md:justify-start align-middle">
-              <RotateCw className="text-green-700" />
-              &nbsp;&nbsp;<span>Re-grant App Access</span>
-            </div>
-          )}
-        </button>
-      </div>
+      <Button
+        asChild
+        className="px-5 py-2 hover:bg-white rounded-lg w-full md:w-fit text-green-700 border-green-400 border-[2px] shadow-sm hover:underline bg-green-300 "
+        onClick={() => setShowPopover(!showPopOver)}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          "Working..."
+        ) : (
+          <div className="flex flex-row align-middle justify-center md:justify-start gap-1 text-lg">
+            <RotateCw className="text-green-700" />
+
+            <span>&nbsp;Re-grant access</span>
+          </div>
+        )}
+      </Button>
       {showPopOver && (
         <ConfirmOverlay
           onClose={setShowPopover}

@@ -5,6 +5,9 @@ import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { RefreshCcw, TableOfContents } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { getUserAccType } from "@/app/actions";
 
 const supabase = createClient();
 
@@ -16,20 +19,21 @@ export default function ViewAllFarmsButton() {
   );
   const [review, setReview] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string>();
+  const [role, setRole] = useState<string>("");
+  useEffect(() => {
+    supabase.auth.getUser().then((res) => {
+      const email = res.data.user?.email;
+      if (email) {
+        getUserAccType(email).then((_role) => setRole(_role));
+      }
+    });
+  }, []);
+  const router = useRouter();
 
   useEffect(() => {
     setRequests(requests_data);
   }, [requests_data]);
 
-  const toggleReviewSection = (id: string) => {
-    if (review) {
-      setReview((prev) => {
-        return prev === id ? null : id;
-      });
-    } else {
-      setReview(id);
-    }
-  };
 
   const makeAPIcall = async () => {
     setIsLoading(true);
@@ -130,7 +134,7 @@ export default function ViewAllFarmsButton() {
           </h1>
         ) : (
           <h1 className="font-semibold tracking-wide text-lg my-4">
-            There are no farms in your region.
+            There are no farmers
           </h1>
         )}
         {requests
@@ -150,19 +154,23 @@ export default function ViewAllFarmsButton() {
                   </div>
                   {/* Review button */}
                   <div className="flex flex-row basis-2/3  justify-end p-2">
-                    <div className="bg-blue-800 w-full md:w-fit p-[0.7px] rounded-lg">
-                      <button
-                        className="px-5 py-2 rounded-lg w-full md:w-fit border-white border-2 shadow-sm hover:underline bg-blue-200 text-blue-800"
-                        onClick={() =>
-                          toggleReviewSection(`${request?.image_file_name}`)
-                        }
+                      <Button
+                        asChild
+                        className={`${role !== "district_admin" ? "ml-auto" : ""} px-5 py-2 mb-3 md:mb-0 hover:bg-blue-700 hover:text-white rounded-lg w-full md:w-fit border-blue-300 border-[1.5px] shadow-sm hover:underline bg-blue-200 text-blue-800`}
+                        onClick={() => {
+                          toast("Loading", { duration: 2000 });
+                          localStorage.setItem(
+                            "currentFarm",
+                            JSON.stringify(request)
+                          );
+                          router.push("/protected/details/farm");
+                        }}
                       >
-                        <div className="flex flex-row justify-center md:justify-start align-middle">
-                          <TableOfContents className="text-blue-800" />
-                          &nbsp;&nbsp;View details
+                        <div className=" flex flex-row align-middle justify-center md:justify-start gap-1">
+                          <TableOfContents size={20} className="" />
+                          <span>&nbsp;View details</span>
                         </div>
-                      </button>
-                    </div>
+                      </Button>
                   </div>
                 </div>
                 {/* review section */}

@@ -7,6 +7,10 @@ import ReGrantAgentAccessButton from "./ReGrantAgentAccessButton";
 import RevokeAgentAccessButton from "./RevokeAgentAccessButton";
 import { RefreshCcw, TableOfContents } from "lucide-react";
 import Image from "next/image";
+import { User } from "@supabase/supabase-js";
+import { getUserAccType } from "@/app/actions";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const supabase = createClient();
 
@@ -16,6 +20,26 @@ export default function ViewAllParishAgentsButton() {
     null
   );
   const [review, setReview] = useState<string | null>(null);
+  
+  const [role, setRole] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    supabase.auth.getUser().then((response) => {
+      if (response.error)
+        toast.error("Error: Could not find user data for the session.");
+      setUser(response.data.user);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (user?.email)
+      getUserAccType(user?.email).then((response) => {
+        setRole(response);
+      });
+  }, [user]);
 
   const toggleReviewSection = (id: string) => {
     if (review) {
@@ -68,9 +92,11 @@ export default function ViewAllParishAgentsButton() {
     };
   }, []);
 
+
+
   return (
     <div>
-      <div className="w-full mb-4 md:mb-0 md:flex md:flex-row md:justify-end">
+      <div className="w-full mb-4 md:flex md:flex-row ">
         <button
           className="bg-gray-300 text-gray-500 px-5 py-2 rounded-lg"
           onClick={makeAPIcall}
@@ -96,11 +122,10 @@ export default function ViewAllParishAgentsButton() {
         {requests && requests?.length > 0 ? (
           <h1 className="font-semibold tracking-wide text-lg mb-4">
             {requests?.length}&nbsp;Field agent{requests.length > 1 ? "s" : ""}{" "}
-            in your parish
           </h1>
         ) : (
           <h1 className="font-semibold tracking-wide text-lg my-4">
-            There are no field agents in your parish.
+            There are no field agents.
           </h1>
         )}
         {requests
@@ -131,18 +156,30 @@ export default function ViewAllParishAgentsButton() {
                   </div>
                   {/* Review button */}
                   <div className="md:flex md:flex-row md:basis-2/3 md:align-middle md:justify-evenly p-2">
-                    <div className="bg-blue-800 mb-4 md:mb-0 w-full md:w-fit p-[1.5px] rounded-lg">
-                      <button
-                        className="px-5 py-2 rounded-lg w-full md:w-fit border-white border-[1px] shadow-sm hover:underline bg-blue-200 text-blue-800"
-                        onClick={() => toggleReviewSection(request.email!)}
-                      >
-                        <div className="flex flex-row align-middle justify-center md:justify-start">
-                          <TableOfContents className="text-blue-800" />
-                          &nbsp;View details
-                        </div>
-                      </button>
-                    </div>
+                  <Button
+                      asChild
+                      // className={`${role !== 'district_admin' && role !== 'parish_admin' ? 'ml-auto' : ''} px-5 py-2 mb-3 md:mb-0 hover:bg-blue-700 hover:text-white rounded-lg w-full md:w-fit border-blue-300 border-[1px] shadow-sm hover:underline bg-blue-200 text-blue-800`}
+                      className={` px-5 py-2 mb-3 md:mb-0 hover:bg-blue-700 hover:text-white rounded-lg w-full md:w-fit border-blue-300 border-[1px] shadow-sm hover:underline bg-blue-200 text-blue-800`}
+                      onClick={() => {
+                        toast("Loading", { duration: 2000 });
+                        localStorage.setItem(
+                          "currentDetails",
+                          JSON.stringify(request)
+                        );
+                        router.push("/protected/details/admin");
+                      }}
+                    >
+                      <div className="flex flex-row align-middle justify-center md:justify-start gap-1">
+                        <TableOfContents
+                          size={20}
+                          className=""
+                        />
+                        <span>&nbsp;View details</span>
+                      </div>
+                    </Button>
 
+                    {/* {role === 'parish_admin' && <div className="md:flex md:flex-row  md:align-middle md:justify-evenly"> */}
+                    { <div className="md:flex md:flex-row  md:align-middle md:justify-evenly">
                     {request.hasAccess ? (
                       <RevokeAgentAccessButton
                         refresh={makeAPIcall}
@@ -154,6 +191,7 @@ export default function ViewAllParishAgentsButton() {
                         refresh={makeAPIcall}
                       />
                     )}
+                    </div>}
                   </div>
                 </div>
                 {/* review section */}

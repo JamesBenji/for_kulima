@@ -51,10 +51,21 @@ export default function FarmsFromFarmer({ farmer_uid }: FarmsFromFarmerProps) {
 
   if (error) {
     return (
-      <div className="text-center text-red-500">
+      <div className="text-center text-red-500 mt-5">
         <p>{error}</p>
         <Button onClick={() => window.location.reload()} className="mt-4">
           Retry
+        </Button>
+      </div>
+    );
+  }
+
+  if (farms.length <= 0) {
+    return (
+      <div className="text-center my-auto text-red-500 mt-5">
+        <p>This farmer has no farms</p>
+        <Button onClick={() => window.history.back()} className="mt-4">
+          Go back
         </Button>
       </div>
     );

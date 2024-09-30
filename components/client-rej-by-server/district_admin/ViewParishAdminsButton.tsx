@@ -1,29 +1,3 @@
-// "use client";
-
-// import { useState } from "react";
-
-// export default function ViewParishAdminsButton() {
-//   const [isLoading, setIsLoading] = useState(false);
-
-//   const makeAPIcall = async () => {
-//     setIsLoading(true);
-//     try {
-//       await fetch("/api/view-all-parish-admins", {
-//         method: "GET",
-//       });
-//     } catch (error) {
-//       alert("Failed to make API call");
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-//   return (
-//     <button onClick={makeAPIcall} disabled={isLoading}>
-//       {isLoading ? "Fetching data..." : "View all parish admins"}
-//     </button>
-//   );
-// }
-
 "use client";
 
 import { createClient } from "@/utils/supabase/client";
@@ -33,23 +7,28 @@ import { BadgeAlert, RefreshCcw, TableOfContents } from "lucide-react";
 import Image from "next/image";
 import RevokeParishAccessButton from "./RevokeParishAccessButton";
 import ReGrantParishAccessButton from "./ReGrantParishAccessButton";
+import { Button } from "@/components/ui/button";
+import ReGrantAccessButton from "../ministry_admin/ReGrantAccessButton";
+import { useRouter } from "next/navigation";
+import { getUserAccType } from "@/app/actions";
 
-const supabase = createClient();
 
 export default function ViewAllParishAgentsButton() {
+  const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
   const [requests, setRequests] = useState<ParishAdminResponse[] | null>(null);
   const [review, setReview] = useState<string | null>(null);
+  const [role, setRole] = useState<string>("");
+  useEffect(() => {
+    supabase.auth.getUser().then((res) => {
+      const email = res.data.user?.email;
+      if (email) {
+        getUserAccType(email).then((_role) => setRole(_role));
+      }
+    });
+  }, []);
 
-  const toggleReviewSection = (id: string) => {
-    if (review) {
-      setReview((prev) => {
-        return prev === id ? null : id;
-      });
-    } else {
-      setReview(id);
-    }
-  };
+  const router = useRouter();
 
   const makeAPIcall = async () => {
     setIsLoading(true);
@@ -94,7 +73,7 @@ export default function ViewAllParishAgentsButton() {
 
   return (
     <div>
-      <div className="w-full mb-4 md:mb-0 md:flex md:flex-row md:justify-end">
+      <div className="w-full mb-4 md:flex md:flex-row ">
         <button
           className="bg-gray-300 text-gray-500 px-5 py-2 rounded-lg"
           onClick={makeAPIcall}
@@ -118,7 +97,7 @@ export default function ViewAllParishAgentsButton() {
 
       <div>
         {requests && requests?.length > 0 ? (
-          <h1 className="font-semibold tracking-wide text-lg mb-4">
+          <h1 className="font-semibold tracking-wide text-lg mb-3">
             {requests?.length}&nbsp;Parish administrator
             {requests.length > 1 ? "s" : ""}{" "}
           </h1>
@@ -131,7 +110,7 @@ export default function ViewAllParishAgentsButton() {
           ?.sort((a, b) => a.first_name.localeCompare(b.first_name))
           .map((request) => (
             <div key={request.email} className="my-2">
-              <div className="block md:flex md:flex-row md:justify-around border-2 rounded-md p-2">
+              <div className="block md:flex md:flex-row md:justify-around border-2 rounded-md py-5 px-4">
                 <div className="flex w-[50px] h-[50px] rounded-full overflow-hidden object-contain mr-5">
                   {/* Requestor image */}
                   {request.image && (
@@ -153,30 +132,45 @@ export default function ViewAllParishAgentsButton() {
                       {request.allocation || "Disrict, Parish, Village"}
                     </h2>
                   </div>
-                  {/* Review button */}
-                  <div className="md:flex md:flex-row md:basis-2/3 md:align-middle md:justify-evenly p-2">
-                    <div className="bg-blue-800 mb-4 md:mb-0 w-full md:w-fit p-[1.5px] rounded-lg">
-                      <button
-                        className="px-5 py-2 rounded-lg w-full md:w-fit border-white border-[1px] shadow-sm hover:underline bg-blue-200 text-blue-800"
-                        onClick={() => toggleReviewSection(request.email!)}
-                      >
-                        <div className="flex flex-row align-middle justify-center md:justify-start">
-                          <TableOfContents className="text-blue-800" />
-                          &nbsp;View details
-                        </div>
-                      </button>
-                    </div>
 
-                    {request.hasAccess ? (
-                      <RevokeParishAccessButton
-                        refresh={makeAPIcall}
-                        email={request.email!}
-                      />
-                    ) : (
-                      <ReGrantParishAccessButton
-                        email={request.email!}
-                        refresh={makeAPIcall}
-                      />
+                  {/* Review button */}
+                  <div className="  md:flex md:flex-row md:basis-2/3 md:align-middle md:justify-evenly p-2">
+                    <Button
+                      asChild
+                      className={`${role !== "district_admin" ? 'ml-auto' : ''} px-5 py-2 mb-3 md:mb-0 hover:bg-blue-700 hover:text-white rounded-lg w-full md:w-fit border-blue-300 border-[1.5px] shadow-sm hover:underline bg-blue-200 text-blue-800`}
+                      onClick={() => {
+                        toast("Loading", { duration: 2000 });
+                        localStorage.setItem(
+                          "currentDetails",
+                          JSON.stringify(request)
+                        );
+                        router.push("/protected/details/admin");
+                      }}
+                    >
+                      <div className=" flex flex-row align-middle justify-center md:justify-start gap-1">
+                        <TableOfContents size={20} className="" />
+                        <span>&nbsp;View details</span>
+                      </div>
+                    </Button>
+
+                    {role === "district_admin" && (
+                      <div>
+                        {request.hasAccess ? (
+                          <div>
+                            <RevokeParishAccessButton
+                              refresh={makeAPIcall}
+                              email={request.email!}
+                            />
+                          </div>
+                        ) : (
+                          <div>
+                            <ReGrantParishAccessButton
+                              email={request.email!}
+                              refresh={makeAPIcall}
+                            />
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -269,7 +263,6 @@ export default function ViewAllParishAgentsButton() {
                         <a
                           href={`/protected/deep-retrieval-agent/${request.email}`}
                           className="text-blue-500 py-1"
-
                         >
                           See linked field agents
                         </a>

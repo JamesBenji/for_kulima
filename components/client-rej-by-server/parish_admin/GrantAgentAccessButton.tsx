@@ -1,6 +1,8 @@
 "use client";
 
 import ConfirmOverlay from "@/components/ConfirmOverlay";
+import { Button } from "@/components/ui/button";
+import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -53,15 +55,23 @@ export default function GrantAgentAccessButton({
 
   return (
     <div>
-      <div className="bg-blue-800 mt-2 w-full md:w-fit p-px rounded-lg">
-        <button
-          className="bg-blue-800 px-5 py-2 w-full md:w-fit rounded-lg text-white/90 border-white border-2 shadow-sm hover:underline"
+      <Button
+          asChild
+          className="px-5 py-2 hover:bg-white rounded-lg w-full md:w-fit text-green-700 border-green-300 border-[2px] shadow-sm hover:underline bg-green-300 "
           onClick={() => setShowPopover(!showPopOver)}
           disabled={isLoading}
         >
-          {isLoading ? "Loading..." : "Grant Agent Access"}
-        </button>
-      </div>
+          {isLoading ? (
+            "Working..."
+          ) : (
+            <div className="flex flex-row align-middle justify-center md:justify-start gap-1 text-lg">
+              <Check className="hover:text-green-500" />
+
+              <span>&nbsp;Grant access</span>
+            </div>
+          )}
+        </Button>
+       
       {showPopOver && (
         <ConfirmOverlay
           onClose={setShowPopover}

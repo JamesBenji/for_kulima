@@ -7,7 +7,6 @@ import GrantAccessButton from "./GrantAccessButton";
 import Image from "next/image";
 import { BadgeAlert, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Span } from "next/dist/trace";
 
 const supabase = createClient();
 
@@ -18,16 +17,6 @@ export default function ViewAccessRequestsButton() {
   );
   const [review, setReview] = useState<string | null>(null);
   const router = useRouter();
-
-  const toggleReviewSection = (id: string) => {
-    if (review) {
-      setReview((prev) => {
-        return prev === id ? null : id;
-      });
-    } else {
-      setReview(id);
-    }
-  };
 
   const makeAPIcall = async () => {
     setIsLoading(true);
@@ -117,7 +106,7 @@ export default function ViewAccessRequestsButton() {
                   />
                 )}
               </div>
-              <div className="flex-1  flex flex-row justify-evenly">
+              <div className="flex-1 flex flex-row justify-evenly">
                 {/* requestor name and requested position */}
                 <div className="flex-1 py-1 px-2">
                   <h1 className="font-semibold tracking-wide text-lg">
@@ -127,6 +116,7 @@ export default function ViewAccessRequestsButton() {
                     {request.allocation || "Disrict, Parish, Village"}
                   </h2>
                 </div>
+
                 {/* Review button */}
                 <div className="flex basis-1/4 align-middle justify-center p-2">
                   <button
@@ -156,6 +146,7 @@ export default function ViewAccessRequestsButton() {
               </div>
               {/* review section */}
             </div>
+            
             <div>
               {review === request.requestor_email && (
                 <div className="flex flex-row px-3 border rounded-md animate-accordion-down py-2">

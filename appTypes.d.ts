@@ -105,7 +105,7 @@ type ParishAdminResponse = {
 type ApplicantFields = {
   first_name: string;
   last_name: string;
-  requestor_email: string;
+  requestor_email?: string;
   phone_number: string;
   organization: string;
   position: string;
@@ -113,6 +113,6 @@ type ApplicantFields = {
   district: string;
   parish: string;
   requested_position: string;
-  email: string;
+  email?: string;
   image: File | null;
 };

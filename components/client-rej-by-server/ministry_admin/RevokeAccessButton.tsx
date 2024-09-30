@@ -1,6 +1,7 @@
 "use client";
 
 import ConfirmOverlay from "@/components/ConfirmOverlay";
+import { Button } from "@/components/ui/button";
 import { ShieldX } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -51,30 +52,29 @@ export default function RevokeAccessButton({
 
   return (
     <div>
-      <div className="bg-red-500 w-full md:w-fit p-[1.5px] rounded-lg">
-        <button
-          className="px-5 py-2 rounded-lg w-full md:w-fit text-red-500 border-white border-[1px] shadow-sm hover:underline bg-red-200 "
+        <Button
+          asChild
+          className="px-5 py-2 hover:bg-white rounded-lg w-full md:w-fit text-red-500 border-red-300 border-[2px] shadow-sm hover:underline bg-red-200 "
           onClick={() => setShowPopover(!showPopOver)}
           disabled={isLoading}
         >
           {isLoading ? (
-            "Loading..."
+            "Working..."
           ) : (
-            <div className="flex flex-row justify-center md:justify-start align-middle ">
-              <ShieldX className="text-red-500" />
-              &nbsp;<span>Revoke Access</span>
+            <div className="flex flex-row align-middle justify-center md:justify-start gap-1 text-lg">
+              <ShieldX size={20} className="text-red-500" />
+              <span>&nbsp;Revoke Access</span>
             </div>
           )}
-        </button>
-      </div>
+        </Button>
       {showPopOver && (
         <ConfirmOverlay
           onClose={setShowPopover}
           setState={setPopoverResponse}
           destructive={true}
           actionName="Revoke access"
-          title={`Are you sure you want to block ${email} from using the mobile app?`}
-          body="This action is will unable the field agent from uploading any data into the Kulima database. You can reverse this action by re-granting this agent access to the mobile app. Do you want to continue with this?"
+          title={`Are you sure you want to block ${email} from accessing this system?`}
+          body="This action is will unable the user from uploading any data into the Kulima database. You can reverse this action by re-granting access. Do you want to continue?"
         />
       )}
     </div>

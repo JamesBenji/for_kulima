@@ -25,7 +25,9 @@ export async function viewParishAccessRequests(
     .from("district_admin")
     .select("district")
     .eq("email", myEmail)
-    .single();
+    .single();    
+
+    const dist = myDistrict?.district
 
   if (district_error) return { error: district_error };
 
@@ -34,10 +36,10 @@ export async function viewParishAccessRequests(
     .select(
       "created_at, requestor_email, image, requested_position, first_name, last_name, phone_number, organization, position, gender, granted_as"
     )
-    .eq("granted_as", "null")
-    .eq("district", myDistrict?.district);
+    .eq("district", dist)
+    .eq("granted_as", "null");
 
-  if (error) return { error };
+  if (error) return { error };  
 
   return { accessRequests };
 }
@@ -108,7 +110,7 @@ export async function viewAllParishAdmins(
     const { data, error } = await supabase
       .from("parish_admin")
       .select(
-        "created_at, email, first_name, last_name, phone_number, organization, position, gender, allocation, granted_by, district, parish, hasAccess"
+        "created_at, email, first_name, last_name, phone_number, organization, position, gender, allocation, granted_by, district, parish, sys_role, hasAccess"
       )
       .eq("granted_by", myEmail);
     if (error) return { error };
@@ -117,7 +119,7 @@ export async function viewAllParishAdmins(
     const { data, error } = await supabase
       .from("parish_admin")
       .select(
-        "created_at, email, first_name, last_name, phone_number, organization, position, gender, allocation, granted_by, district, parish, hasAccess"
+        "created_at, email, first_name, last_name, phone_number, organization, position, gender, allocation, granted_by, district, parish, sys_role, hasAccess"
       );
     if (error) return { error };
     return { data };

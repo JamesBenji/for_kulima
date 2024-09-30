@@ -12,7 +12,9 @@ export async function POST(request: NextRequest) {
     });
     const imageFile = formData.get("image") as File | null;
 
-    const supabase = createClient(); // Adjust according to 
+    const supabase = createClient();
+    const email = (await supabase.auth.getUser()).data.user?.email;
+
 
     const imageUploadRes = await supabase.storage
       .from("applicants")
@@ -46,7 +48,7 @@ export async function POST(request: NextRequest) {
             parish: data.parish,
             requested_position: data.requested_position,
             phone_number: [data.phone_number],
-            requestor_email: data.email,
+            requestor_email: email,
           },
         ]);
 

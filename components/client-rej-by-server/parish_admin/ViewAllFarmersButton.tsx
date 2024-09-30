@@ -5,6 +5,9 @@ import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { RefreshCcw, TableOfContents } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { getUserAccType } from "@/app/actions";
+import { useRouter } from "next/navigation";
 
 const supabase = createClient();
 
@@ -16,20 +19,22 @@ export default function ViewAllFarmersButton() {
   );
   const [review, setReview] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string>();
+  const router = useRouter();
 
   useEffect(() => {
     setRequests(requests_data);
   }, [requests_data]);
 
-  const toggleReviewSection = (id: string) => {
-    if (review) {
-      setReview((prev) => {
-        return prev === id ? null : id;
-      });
-    } else {
-      setReview(id);
-    }
-  };
+  const [role, setRole] = useState<string>("");
+
+  useEffect(() => {
+    supabase.auth.getUser().then((res) => {
+      const email = res.data.user?.email;
+      if (email) {
+        getUserAccType(email).then((_role) => setRole(_role));
+      }
+    });
+  }, []);
 
   const makeAPIcall = async () => {
     setIsLoading(true);
@@ -51,9 +56,7 @@ export default function ViewAllFarmersButton() {
   };
 
   useEffect(() => {
-    // const id = toast.loading('Loading...', {duration: 2000})
     makeAPIcall();
-    // toast.dismiss(id)
   }, []);
 
   useEffect(() => {
@@ -91,6 +94,10 @@ export default function ViewAllFarmersButton() {
       setRequests(requests_data);
     }
   }, [firstName]);
+
+  useEffect(() => {
+    console.log({ logreq: JSON.stringify(requests?.[0], null, 4) });
+  }, [requests]);
 
   return (
     <div>
@@ -152,25 +159,30 @@ export default function ViewAllFarmersButton() {
                   </div>
                   {/* Review button */}
                   <div className="flex flex-row basis-2/3  justify-end p-2">
-                    <div className="bg-blue-800 w-full md:w-fit p-[0.7px] rounded-lg">
-                      <button
-                        className="px-5 py-2 rounded-lg w-full md:w-fit  border-white border-2 shadow-sm hover:underline bg-blue-200 text-blue-800"
-                        onClick={() =>
-                          toggleReviewSection(
-                            `${request?.first_name} ${request?.last_name}`
-                          )
-                        }
-                      >
-                        <div className="flex flex-row justify-center md:justify-start align-middle">
-                          <TableOfContents className="text-blue-800" />
-                          &nbsp;&nbsp;View details
-                        </div>
-                      </button>
-                    </div>
+                    <Button
+                      asChild
+                      className={`${role !== "district_admin" ? "ml-auto" : ""} px-5 py-2 mb-3 md:mb-0 hover:bg-blue-700 hover:text-white rounded-lg w-full md:w-fit border-blue-300 border-[1.5px] shadow-sm hover:underline bg-blue-200 text-blue-800`}
+                      onClick={() => {
+                        toast("Loading", { duration: 2000 });
+                        console.log({ request: Object.keys(request) });
+
+                        localStorage.setItem(
+                          "currentFarmer",
+                          JSON.stringify(request)
+                        );
+                        router.push("/protected/details/farmer");
+                      }}
+                    >
+                      <div className=" flex flex-row align-middle justify-center md:justify-start gap-1">
+                        <TableOfContents size={20} className="" />
+                        <span>&nbsp;View details</span>
+                      </div>
+                    </Button>
                   </div>
                 </div>
                 {/* review section */}
               </div>
+
               <div>
                 {review === `${request?.first_name} ${request?.last_name}` && (
                   <div className="flex flex-col md:flex-row md:px-3 border rounded-md animate-accordion-down md:py-2">
@@ -248,10 +260,11 @@ export default function ViewAllFarmersButton() {
                             {request.tel[0] ? request.tel[0] : "Undefined"}{" "}
                           </span>
                         ) : (
-                          request?.tel?.map((tel) => (
-                            <>
+                          Array.isArray(request?.tel) &&
+                          request.tel.map((tel) => (
+                            <li>
                               <span key={tel}>{tel}</span> <br />
-                            </>
+                            </li>
                           ))
                         )}
                       </p>

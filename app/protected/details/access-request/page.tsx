@@ -1,6 +1,11 @@
 "use client";
+import { getUserAccType } from "@/app/actions";
+import GrantParishAccessButton from "@/components/client-rej-by-server/district_admin/GrantParishAccessButton";
 import GrantAccessButton from "@/components/client-rej-by-server/ministry_admin/GrantAccessButton";
+import GrantAgentAccessButton from "@/components/client-rej-by-server/parish_admin/GrantAgentAccessButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { createClient } from "@/utils/supabase/client";
+import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -87,22 +92,12 @@ const generateColumnArrays = (arr: string[]) => {
 };
 
 export default function AdministratorDetailsView() {
+  const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
   const [currentDetailsJSON, setCurrentDetailsJSON] = useState("");
   const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null; 
-  }
-
-  useEffect(() => {
-    const temp = localStorage.getItem("currentRequest");
-    setCurrentDetailsJSON(temp ?? "");
-  }, []);
+  const [role, setRole] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const currentRequest = currentDetailsJSON
     ? JSON.parse(currentDetailsJSON)
@@ -114,29 +109,39 @@ export default function AdministratorDetailsView() {
     .sort((a, b) => a.localeCompare(b));
 
   const columnArrays = generateColumnArrays(otherKeys);
-  const router = useRouter();
 
   const makeAPIcall = async () => {
-    setIsLoading(true);
-    try {
-      const requests = await fetch("/api/view-access-requests", {
-        method: "GET",
-      });
-      const parsedRequests = await requests.json();
-
-      if (parsedRequests.error) return toast.error(parsedRequests.error);
-
-      if (!parsedRequests.error) {
-        toast.success("Access granted");
-        window.location.replace("/protected");
-        return;
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    window.history.back();
+    
   };
 
-  console.log({ img: currentRequest.image });
+  useEffect(() => {
+    const temp = localStorage.getItem("currentRequest");
+    setCurrentDetailsJSON(temp ?? "");
+  }, []);
+
+  useEffect(() => {
+    supabase.auth.getUser().then((response) => {
+      if (response.error)
+        toast.error("Error: Could not find user data for the session.");
+      setUser(response.data.user);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (user?.email)
+      getUserAccType(user?.email).then((response) => {
+        setRole(response);
+      });
+  }, [user]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <div className="w-full overflow-hidden md:min-w-fit md:max-w-80 mx-auto my-5">
@@ -153,12 +158,12 @@ export default function AdministratorDetailsView() {
           <CardTitle className="md:min-w-prose w-full mx-auto rounded-lg shadow-md shadow-gray-300 border-[1px] border-gray-300 bg-gray-100 px-4 py-2">
             {/* image name sys_role */}
             <div className="flex flex-row align-middle justify-between rounded-lg overflow-hidden object-contain md:gap-4">
-              <div className="w-[80px] h-[80px] object-contain rounded-lg overflow-hidden text-xs text-gray-300">
+              <div className="w-[200px] h-[200px] object-fill rounded-lg overflow-hidden text-xs text-gray-300">
                 <img
                   src={currentRequest.image}
                   alt="Admin requestor image"
-                  height={80}
-                  width={80}
+                  height={200}
+                  width={200}
                 />
               </div>
               <div className="my-auto px-5">
@@ -167,7 +172,7 @@ export default function AdministratorDetailsView() {
                 <span className="text-sm font-normal tracking-normal text-black/60">
                   {currentRequest.requested_position === "district_admin"
                     ? "District administrator request"
-                    : currentRequest.sys_role === "parish_admin"
+                    : currentRequest.requested_position === "parish_admin"
                       ? "Parish administrator request"
                       : "Field agent request"}
                 </span>
@@ -205,11 +210,23 @@ export default function AdministratorDetailsView() {
               ))}
             </div>
           </div>
-          <div className="py-2">
-            <GrantAccessButton
-              refresh={makeAPIcall}
-              email={currentRequest.requestor_email}
-            />
+          <div className="mt-2 py-2 w-full flex align-middle justify-center">
+            {role === "district_admin" ? (
+              <GrantParishAccessButton
+                refresh={makeAPIcall}
+                email={currentRequest.requestor_email}
+              />
+            ) : role === "parish_admin" ? (
+              <GrantAgentAccessButton
+                refresh={makeAPIcall}
+                email={currentRequest.requestor_email}
+              />
+            ) : (
+              <GrantAccessButton
+                refresh={makeAPIcall}
+                email={currentRequest.requestor_email}
+              />
+            )}
           </div>
         </CardContent>
       </Card>

@@ -1,6 +1,7 @@
 'use client'
 
 import ConfirmOverlay from '@/components/ConfirmOverlay';
+import { Button } from '@/components/ui/button';
 import { ShieldX } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -52,15 +53,21 @@ export default function RevokeAgentAccessButton({
 
   return (
     <div>
-      <div className="bg-red-500 w-full md:w-fit p-[1.5px] rounded-lg">
-        <button
-          className="px-5 py-2 rounded-lg w-full md:w-fit text-red-500 border-white border-[1px] shadow-sm hover:underline bg-red-200 "
+      <Button
+          asChild
+          className="px-5 py-2 hover:bg-white rounded-lg w-full md:w-fit text-red-500 border-red-300 border-[2px] shadow-sm hover:underline bg-red-200 "
           onClick={() => setShowPopover(!showPopOver)}
           disabled={isLoading}
         >
-          {isLoading ? "Loading..." : <div className='flex flex-row justify-center md:justify-start align-middle'><ShieldX className='text-red-500' />&nbsp;<span>Revoke App Access</span></div>}
-        </button>
-      </div>
+          {isLoading ? (
+            "Working..."
+          ) : (
+            <div className="flex flex-row align-middle justify-center md:justify-start gap-1 text-lg">
+              <ShieldX size={20} className="text-red-500" />
+              <span>&nbsp;Revoke Access</span>
+            </div>
+          )}
+        </Button>
       {showPopOver && (
         <ConfirmOverlay
           onClose={setShowPopover}

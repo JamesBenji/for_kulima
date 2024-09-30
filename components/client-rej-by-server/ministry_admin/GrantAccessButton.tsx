@@ -1,9 +1,10 @@
-'use client'
+"use client";
 
-import ConfirmOverlay from '@/components/ConfirmOverlay';
-import { Check } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import ConfirmOverlay from "@/components/ConfirmOverlay";
+import { Button } from "@/components/ui/button";
+import { Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function GrantAccessButton({
   email,
@@ -25,10 +26,9 @@ export default function GrantAccessButton({
 
       const response = await fetch("/api/grant-access-district", {
         method: "POST",
-        body: JSON.stringify({target_mail: email})
+        body: JSON.stringify({ target_mail: email }),
       });
 
-      
       toast.dismiss(loader);
 
       const data = await response.json();
@@ -37,8 +37,7 @@ export default function GrantAccessButton({
 
       toast.success("Access granted successfully!");
 
-      refresh()
-      
+      refresh();
     } finally {
       setIsLoading(false);
     }
@@ -53,27 +52,34 @@ export default function GrantAccessButton({
 
   return (
     <div>
-    <div className="bg-green-500 w-fit p-px rounded-lg">
-      <button
-        className="bg-green-500 px-5 py-2 rounded-lg text-white/90 border-white border-2 shadow-sm hover:underline"
-        onClick={() => setShowPopover(!showPopOver)}
-        disabled={isLoading}
-      >
-        <span className="flex flex-row align-middle justify-center">
-          <Check />&nbsp;<span>{isLoading ? "Loading..." : "Grant Access"}</span>
-        </span>
-      </button>
+      <div className="bg-green-500 w-fit p-px rounded-lg">
+        <Button
+          asChild
+          className="px-5 py-2 hover:bg-white rounded-lg w-full md:w-fit text-green-700 border-green-300 border-[2px] shadow-sm hover:underline bg-green-300 "
+          onClick={() => setShowPopover(!showPopOver)}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            "Working..."
+          ) : (
+            <div className="flex flex-row align-middle justify-center md:justify-start gap-1 text-lg">
+              <Check className="hover:text-green-500" />
+
+              <span>&nbsp;Grant access</span>
+            </div>
+          )}
+        </Button>
+      </div>
+      {showPopOver && (
+        <ConfirmOverlay
+          onClose={setShowPopover}
+          setState={setPopoverResponse}
+          actionName="Grant access"
+          title="Are you sure?"
+          body="This action will grant the administrator access to the Kulima system. Do you want to continue?"
+        />
+      )}
     </div>
-    {showPopOver && (
-      <ConfirmOverlay
-        onClose={setShowPopover}
-        setState={setPopoverResponse}
-        actionName="Grant access"
-        title="Are you sure?"
-        body="This action will grant the administrator access to the Kulima system. Do you want to continue?"
-      />
-    )}
-  </div>
     // <button onClick={makeAPIcall} disabled={isLoading}>
     //   {isLoading ? 'Loading...' : 'Grant Access Button'}
     // </button>

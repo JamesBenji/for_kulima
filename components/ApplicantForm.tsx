@@ -1,5 +1,11 @@
 "use client";
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Input } from "@/components/ui/input";
@@ -13,16 +19,35 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import useLocation from "@/hooks/useLocation";
+import useUniquesDistricts from "@/hooks/useUniqueDistricts";
 
 interface FormErrors {
   [key: string]: string;
 }
 
+interface locationsArrProps {
+  district: string;
+  sub_county: string;
+}
+
+const filterSubCountyByDistrict = (
+  locationsArr: locationsArrProps[] | null,
+  district: string
+) => {
+  if (locationsArr) {
+    return locationsArr
+      .filter((dataPoint) => dataPoint.district === district)
+      .map((data) => data.sub_county);
+  }
+
+  return [];
+};
+
 export default function ApplicantForm() {
   const [formData, setFormData] = useState<ApplicantFields>({
     first_name: "",
     last_name: "",
-    requestor_email: "",
     phone_number: "",
     organization: "",
     position: "",
@@ -30,16 +55,34 @@ export default function ApplicantForm() {
     district: "",
     parish: "",
     requested_position: "",
-    email: "",
     image: null,
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
+
+  const locations = useLocation();
+
+  const [selectedSubCounty, setSelectedSubCounty] = useState<string>("");
+  const [subCountyDataSet, setSubCountyDataSet] = useState<string[]>([]);
+  // const [districtDataSet, setDistrictDataSet] = useState<string[]>([]);
+  const districtDataSetFromHook = useUniquesDistricts();
+  const districtDataSet = useMemo(
+    () => districtDataSetFromHook?.map((data) => data.district),
+    [districtDataSetFromHook]
+  );
+
+  useEffect(() => {
+    const _sub_counties = filterSubCountyByDistrict(
+      locations,
+      selectedDistrict
+    );
+    setSubCountyDataSet(_sub_counties);
+  }, [selectedDistrict]);
 
   const validateForm = () => {
     let newErrors: FormErrors = {};
-
     (
       [
         "first_name",
@@ -52,25 +95,12 @@ export default function ApplicantForm() {
         "parish",
         "requested_position",
         "phone_number",
-        "email",
       ] as const
     ).forEach((field) => {
       if (!formData[field]) {
         newErrors[field] = "This field is required";
       }
     });
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (
-      formData.requestor_email &&
-      !emailRegex.test(formData.requestor_email)
-    ) {
-      newErrors.requestor_email = "Invalid email format";
-    }
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = "Invalid email format";
-    }
 
     // Validate phone number
     if (
@@ -86,14 +116,22 @@ export default function ApplicantForm() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value.trim() }));
   };
-
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value.trim() }));
   };
 
+  const handleDistrictChange = (name: string, value: string) => {
+    setSelectedDistrict(value);
+    setFormData((prev) => ({ ...prev, [name]: value.trim() }));
+  };
+
+  const handleSubCountyChange = (name: string, value: string) => {
+    setSelectedSubCounty(value);
+    setFormData((prev) => ({ ...prev, [name]: value.trim() }));
+  };
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -114,7 +152,6 @@ export default function ApplicantForm() {
     e.preventDefault();
     if (validateForm()) {
       const formDataToSend = new FormData();
-      const logObject: Record<string, string | File | null> = {};
 
       Object.entries(formData).forEach(([key, value]) => {
         if (key === "image" && value instanceof File) {
@@ -124,26 +161,14 @@ export default function ApplicantForm() {
         }
       });
 
-      console.log("Form values to be submitted:");
-      Object.entries(logObject).forEach(([key, value]) => {
-        if (key === "image" && value instanceof File) {
-          console.log(
-            `${key}: File - ${value.name} (${value.type}, ${value.size} bytes)`
-          );
-        } else {
-          console.log(`${key}: ${value}`);
-        }
-      });
-
-
-      toast.loading('Saving your data', {duration: 3000})
+      toast.loading("Saving your data", { duration: 3000 });
       fetch("/api/register-applicant", {
         method: "POST",
         body: formDataToSend,
       }).then(() => {
-        toast.success('Access request made successfully', {duration: 3000});
-        window.location.replace('/protected')
-        window.location.reload()
+        toast.success("Access request made successfully", { duration: 3000 });
+        window.location.replace("/protected");
+        window.location.reload();
       });
     }
   };
@@ -185,46 +210,12 @@ export default function ApplicantForm() {
           </div>
 
           <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className={errors.email ? "border-red-500" : ""}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-            )}
-          </div>
-
-          {/* <div>
-            <Label htmlFor="requestor_email">Requestor Email</Label>
-            <Input
-              id="requestor_email"
-              name="requestor_email"
-              type="email"
-              value={formData.requestor_email}
-              onChange={handleInputChange}
-              className={errors.requestor_email ? "border-red-500" : ""}
-            />
-            {errors.requestor_email && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.requestor_email}
-              </p>
-            )}
-          </div> */}
-
-          <div>
             <Label htmlFor="phone_number">Phone Number</Label>
             <Input
               id="phone_number"
               name="phone_number"
               value={formData.phone_number}
               onChange={handleInputChange}
-              //   required
-              //   onChange={handlePhoneChange}
               className={errors.phone_number ? "border-red-500" : ""}
             />
             {errors.phone_number && (
@@ -282,7 +273,7 @@ export default function ApplicantForm() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            {/* <div>
               <Label htmlFor="district">District</Label>
               <Input
                 id="district"
@@ -294,8 +285,56 @@ export default function ApplicantForm() {
               {errors.district && (
                 <p className="text-red-500 text-sm mt-1">{errors.district}</p>
               )}
-            </div>
+            </div> */}
+
             <div>
+              <Label htmlFor="district">District</Label>
+              <Select
+                onValueChange={(value) =>
+                  handleDistrictChange("district", value)
+                }
+              >
+                <SelectTrigger
+                  className={errors.district ? "border-red-500" : ""}
+                >
+                  <SelectValue placeholder="Select your district" />
+                </SelectTrigger>
+                <SelectContent>
+                  {districtDataSet?.map((district) => (
+                    <SelectItem value={district}>{district}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.district && (
+                <p className="text-red-500 text-sm mt-1">{errors.district}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="parish">Parish</Label>
+              <Select
+                onValueChange={(value) =>
+                  handleSubCountyChange("parish", value)
+                }
+              >
+                <SelectTrigger
+                  className={errors.parish ? "border-red-500" : ""}
+                >
+                  <SelectValue placeholder="Select your parish" />
+                </SelectTrigger>
+                <SelectContent>
+                  {subCountyDataSet.length > 0 &&
+                    subCountyDataSet?.map((sub_county) => (
+                      <SelectItem value={sub_county}>{sub_county}</SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              {errors.parish && (
+                <p className="text-red-500 text-sm mt-1">{errors.parish}</p>
+              )}
+            </div>
+
+            {/* <div>
               <Label htmlFor="parish">Parish</Label>
               <Input
                 id="parish"
@@ -307,7 +346,7 @@ export default function ApplicantForm() {
               {errors.parish && (
                 <p className="text-red-500 text-sm mt-1">{errors.parish}</p>
               )}
-            </div>
+            </div> */}
           </div>
 
           <div>
@@ -325,7 +364,6 @@ export default function ApplicantForm() {
               <SelectContent>
                 <SelectItem value="district_admin">District Admin</SelectItem>
                 <SelectItem value="parish_admin">Parish Admin</SelectItem>
-                <SelectItem value="field_agent">Field Agent</SelectItem>
               </SelectContent>
             </Select>
             {errors.requested_position && (

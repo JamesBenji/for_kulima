@@ -4,9 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import React from "react";
 
 async function ApplicantDetails() {
-
   const supabase = createClient();
-
 
   const {
     data: { user },

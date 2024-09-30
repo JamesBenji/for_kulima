@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import GrantParishAccessButton from "./GrantParishAccessButton";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const supabase = createClient();
 
@@ -16,6 +17,7 @@ export default function ViewParishAccessRequestsButton() {
   );
   // const [error, setError] = useState<string | null>(null);
   const [review, setReview] = useState<string | null>(null);
+  const router = useRouter();
 
   const toggleReviewSection = (id: string) => {
     if (review) {
@@ -134,7 +136,14 @@ export default function ViewParishAccessRequestsButton() {
                 <div className="md:flex md:flex-row md:basis-2/3 md:align-middle md:justify-evenly p-2">
                   <button
                     className="bg-blue-800 py-3 px-5 mb-4 md:mb-0 w-full md:w-fit p-[1.5px] rounded-lg"
-                    onClick={() => toggleReviewSection(request.requestor_email)}
+                    onClick={() => {
+                      localStorage.setItem(
+                        "currentRequest",
+                        JSON.stringify(request)
+                      );
+                      router.push("/protected/details/access-request");
+                      // toggleReviewSection(request.requestor_email);
+                    }}
                   >
                     <div className="flex flex-row align-middle justify-center text-white md:justify-start">
                       <BadgeAlert className="text-white" />

@@ -1,14 +1,20 @@
 "use client";
+import { getUserAccType } from "@/app/actions";
+import ReGrantParishAccessButton from "@/components/client-rej-by-server/district_admin/ReGrantParishAccessButton";
+import RevokeParishAccessButton from "@/components/client-rej-by-server/district_admin/RevokeParishAccessButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { createClient } from "@/utils/supabase/client";
+import { User } from "@supabase/supabase-js";
 import { Link } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { LinearGradient } from "react-text-gradients";
 
 const getKeys = (obj: any) => {
   return Object.keys(obj);
 };
-const headingKeys = ["first_name", "last_name", "sys_role", "image"];
+const headingKeys = ["first_name", "last_name", "sys_role", "image", 'agent_id'];
 
 const formattedKey = (key: string) => {
   let temp = key;
@@ -47,18 +53,23 @@ function getMonthName(monthNumber: number): string {
 }
 
 const formattedValue = (value: any, key: string) => {
-  console.log({ key });
   if (typeof value === "boolean") {
     return value ? "Yes" : "No";
   }
 
-  if (key === "created_at") {
+  if (key === "created_at" || key === 'granted_on') {
     const date = new Date(value);
     const time_with_offset_date = date.getTime() + 3 * 60 * 60 * 1000;
     const time_with_offset = new Date(time_with_offset_date);
 
     return `${getMonthName(time_with_offset.getMonth())} ${time_with_offset.getDate()}, ${time_with_offset.getFullYear()} at ${time_with_offset.getHours()}:${time_with_offset.getMinutes()}`;
   }
+
+  if (value.includes("_")) {
+    value = value.split("_").reduce((a: any, b: any) => `${a} ${b}`);
+    return value.toLocaleUpperCase();
+  }
+
 
   return value;
 };
@@ -74,17 +85,10 @@ const generateColumnArrays = (arr: string[]) => {
 
 export default function AdministratorDetailsView() {
   //   const currentDetails = useDetailsCardState((state) => state.currentDetails);
+  const supabase = createClient();
   const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    // Set the mounted state to true once the component is mounted
-    setIsMounted(true);
-  }, []);
-
-  // Only render the content once the component is mounted
-  if (!isMounted) {
-    return null; // or return a loading spinner if desired
-  }
+  const [role, setRole] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const currentDetailsJSON = localStorage.getItem("currentDetails");
   const currentDetails = currentDetailsJSON
     ? JSON.parse(currentDetailsJSON)
@@ -96,6 +100,36 @@ export default function AdministratorDetailsView() {
     .sort((a: string, b: string) => a.localeCompare(b));
 
   const columnArrays = generateColumnArrays(otherKeys);
+
+  const makeAPIcall = () => {
+    window.history.back();
+    window.location.reload();
+  };
+
+  useEffect(() => {
+    supabase.auth.getUser().then((response) => {
+      if (response.error)
+        toast.error("Error: Could not find user data for the session.");
+      setUser(response.data.user);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (user?.email)
+      getUserAccType(user?.email).then((response) => {
+        setRole(response);
+      });
+  }, [user]);
+
+  useEffect(() => {
+    // Set the mounted state to true once the component is mounted
+    setIsMounted(true);
+  }, []);
+
+  // Only render the content once the component is mounted
+  if (!isMounted) {
+    return null; // or return a loading spinner if desired
+  }
 
   return (
     <div className="w-full overflow-hidden md:min-w-fit md:max-w-80 mx-auto my-5">
@@ -166,13 +200,38 @@ export default function AdministratorDetailsView() {
               ))}
             </div>
           </div>
+
+          {role === "district_admin" && (
+            <div className="w-full flex align-middle justify-center mt-3">
+              {currentDetails.hasAccess ? (
+                <div>
+                  <RevokeParishAccessButton
+                    refresh={makeAPIcall}
+                    email={currentDetails.email!}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <ReGrantParishAccessButton
+                    email={currentDetails.email!}
+                    refresh={makeAPIcall}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="w-full flex align-middle justify-center">
-            {currentDetails.sys_role === 'district_admin' && <a
-              href={`/protected/district_email/${currentDetails.email}`}
-              className="text-blue-500 flex align-middle justify-center py-2 gap-1"
-            > <Link size={20}/>
-              See linked parish administrators
-            </a>}
+            {currentDetails.sys_role === "district_admin" && (
+              <a
+                href={`/protected/district_email/${currentDetails.email}`}
+                className="text-blue-500 flex align-middle justify-center py-2 gap-1"
+              >
+                {" "}
+                <Link size={20} />
+                See linked parish administrators
+              </a>
+            )}
           </div>
         </CardContent>
       </Card>

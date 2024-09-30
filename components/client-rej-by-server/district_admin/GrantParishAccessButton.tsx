@@ -1,6 +1,7 @@
 "use client";
 
 import ConfirmOverlay from "@/components/ConfirmOverlay";
+import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -57,15 +58,23 @@ export default function GrantParishAccessButton({
   return (
     <div>
       <div className="bg-green-500 w-fit p-px rounded-lg">
-        <button
-          className="bg-green-500 px-5 py-2 rounded-lg text-white/90 border-white border-2 shadow-sm hover:underline"
+      <Button
+          asChild
+          className="px-5 py-2 hover:bg-white rounded-lg w-full md:w-fit text-green-700 border-green-300 border-[2px] shadow-sm hover:underline bg-green-300 "
           onClick={() => setShowPopover(!showPopOver)}
           disabled={isLoading}
         >
-          <span className="flex flex-row align-middle justify-center">
-            <Check />&nbsp;<span>{isLoading ? "Loading..." : "Grant Access"}</span>
-          </span>
-        </button>
+          {isLoading ? (
+            "Working..."
+          ) : (
+            <div className="flex flex-row align-middle justify-center md:justify-start gap-1 text-lg">
+              <Check className="hover:text-green-500" />
+
+              <span>&nbsp;Grant access</span>
+            </div>
+          )}
+        </Button>
+
       </div>
       {showPopOver && (
         <ConfirmOverlay
@@ -73,7 +82,7 @@ export default function GrantParishAccessButton({
           setState={setPopoverResponse}
           actionName="Grant access"
           title="Are you sure?"
-          body="This action is irreversible"
+          body="This action will grant the parish administrator requestor access to the Kulima system. Do you want to continue?"
         />
       )}
     </div>
