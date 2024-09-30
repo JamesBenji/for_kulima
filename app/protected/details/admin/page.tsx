@@ -84,15 +84,41 @@ const generateColumnArrays = (arr: string[]) => {
 };
 
 export default function AdministratorDetailsView() {
-  //   const currentDetails = useDetailsCardState((state) => state.currentDetails);
   const supabase = createClient();
   const [isMounted, setIsMounted] = useState(false);
   const [role, setRole] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const currentDetailsJSON = localStorage.getItem("currentDetails");
-  const currentDetails = currentDetailsJSON
-    ? JSON.parse(currentDetailsJSON)
-    : {};
+  const [currentDetails, setCurrentDetails] = useState<any>({});
+
+  useEffect(() => {
+    setIsMounted(true);
+    const currentDetailsJSON = localStorage.getItem("currentDetails");
+    if (currentDetailsJSON) {
+      setCurrentDetails(JSON.parse(currentDetailsJSON));
+    }
+  }, []);
+
+  useEffect(() => {
+    supabase.auth.getUser().then((response) => {
+      if (response.error) {
+        toast.error("Error: Could not find user data for the session.");
+      } else {
+        setUser(response.data.user);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (user?.email) {
+      getUserAccType(user.email).then((response) => {
+        setRole(response);
+      });
+    }
+  }, [user]);
+
+  if (!isMounted) {
+    return null; // or return a loading spinner if desired
+  }
 
   const keys = getKeys(currentDetails);
   const otherKeys = keys
@@ -106,30 +132,6 @@ export default function AdministratorDetailsView() {
     window.location.reload();
   };
 
-  useEffect(() => {
-    supabase.auth.getUser().then((response) => {
-      if (response.error)
-        toast.error("Error: Could not find user data for the session.");
-      setUser(response.data.user);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (user?.email)
-      getUserAccType(user?.email).then((response) => {
-        setRole(response);
-      });
-  }, [user]);
-
-  useEffect(() => {
-    // Set the mounted state to true once the component is mounted
-    setIsMounted(true);
-  }, []);
-
-  // Only render the content once the component is mounted
-  if (!isMounted) {
-    return null; // or return a loading spinner if desired
-  }
 
   return (
     <div className="w-full overflow-hidden md:min-w-fit md:max-w-80 mx-auto my-5">
