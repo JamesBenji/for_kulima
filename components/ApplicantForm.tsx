@@ -187,6 +187,7 @@ export default function ApplicantForm() {
                 id="first_name"
                 name="first_name"
                 value={formData.first_name}
+                maxLength={20}
                 onChange={handleInputChange}
                 className={errors.first_name ? "border-red-500" : ""}
               />
@@ -200,6 +201,7 @@ export default function ApplicantForm() {
                 id="last_name"
                 name="last_name"
                 value={formData.last_name}
+                maxLength={20}
                 onChange={handleInputChange}
                 className={errors.last_name ? "border-red-500" : ""}
               />
@@ -216,6 +218,7 @@ export default function ApplicantForm() {
               name="phone_number"
               value={formData.phone_number}
               onChange={handleInputChange}
+              maxLength={10}
               className={errors.phone_number ? "border-red-500" : ""}
             />
             {errors.phone_number && (
@@ -231,6 +234,7 @@ export default function ApplicantForm() {
                 name="organization"
                 value={formData.organization}
                 onChange={handleInputChange}
+                maxLength={30}
                 className={errors.organization ? "border-red-500" : ""}
               />
               {errors.organization && (
@@ -245,6 +249,7 @@ export default function ApplicantForm() {
                 id="position"
                 name="position"
                 value={formData.position}
+                maxLength={30}
                 onChange={handleInputChange}
                 className={errors.position ? "border-red-500" : ""}
               />

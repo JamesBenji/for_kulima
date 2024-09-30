@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
             parish: data.parish,
             requested_position: data.requested_position,
             phone_number: [data.phone_number],
-            requestor_email: data.email,
+            requestor_email: email,
           },
         ]);
 
