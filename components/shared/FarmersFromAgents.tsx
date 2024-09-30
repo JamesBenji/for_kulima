@@ -159,14 +159,10 @@ export default function FarmersFromAgents({
       {/* heading */}
       <p className="font-semibold tracking-normal md:text-2xl text-center py-5">
         <LinearGradient gradient={["to left", "#17acff ,#17acff ,#00ff00"]}>
-          Farmer Details
+        {`${farms?.length} `}Farmer{`${farms?.length > 1 ? 's' : ''} `}
         </LinearGradient>
       </p>
-      <p className="font-semibold tracking-normal md:text-lg text-center">
-        <LinearGradient gradient={["to left", "#17acff ,#17acff ,#00ff00"]}>
-          {`${farms?.length} rows`}
-        </LinearGradient>
-      </p>
+      
 
       {farms?.length > 0 &&
         farms

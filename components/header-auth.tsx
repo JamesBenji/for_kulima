@@ -35,7 +35,11 @@ export default function AuthButton() {
       </span>
 
       <form action={signOutAction}>
-        <Button type="submit" variant={"outline"}>
+        <Button
+          type="submit"
+          variant={"outline"}
+          onClick={() => toast("Signing you out", { duration: 3500 })}
+        >
           Sign out
         </Button>
       </form>
@@ -55,7 +59,6 @@ export default function AuthButton() {
         size="sm"
         variant={"default"}
         className="bg-white text-black hover:bg-black/5"
-        onClick={() => toast('Signing you out', {duration: 3500})}
       >
         <a href="/sign-up">Sign up</a>
       </Button>
