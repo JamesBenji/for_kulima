@@ -21,6 +21,7 @@ export default function ViewDistrictAdminsButton() {
   >(null);
   const [review, setReview] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   const makeAPIcall = async () => {
     setIsLoading(true);
@@ -72,7 +73,7 @@ export default function ViewDistrictAdminsButton() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setFirstName(value.trim())
+    setFirstName(value.trim());
     return;
   };
 
@@ -80,8 +81,12 @@ export default function ViewDistrictAdminsButton() {
     if (firstName) {
       setDisplayReqs((prev) => {
         return prev
-          ? prev?.filter((item) =>
-              item.first_name.toLowerCase().includes(firstName.toLowerCase()) || item.last_name.toLowerCase().includes(firstName.toLowerCase())
+          ? prev?.filter(
+              (item) =>
+                item.first_name
+                  .toLowerCase()
+                  .includes(firstName.toLowerCase()) ||
+                item.last_name.toLowerCase().includes(firstName.toLowerCase())
             )
           : null;
       });
@@ -89,6 +94,15 @@ export default function ViewDistrictAdminsButton() {
       setDisplayReqs(requests);
     }
   }, [firstName]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <div>
