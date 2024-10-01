@@ -98,10 +98,10 @@ export default async function AuthButton() {
   const supabase = createClient()
   
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { session },
+  } = await supabase.auth.getSession()
 
-  const email = user?.email
+  const email = session?.user.email
 
   // Get the current path from the request headers
   const headersList = headers()
@@ -114,7 +114,7 @@ export default async function AuthButton() {
   //   return <Loader2 size={20} className="animate-spin" />
   // }
 
-  return email && isProtectedRoute || isFromSignIn ? (
+  return session && isProtectedRoute || isFromSignIn ? (
     <div className="flex items-center md:gap-4 mr-2">
       <span className="hidden md:block">
         <LinearGradient gradient={["to left", "#17acff ,#17acff ,#00ff00"]}>
