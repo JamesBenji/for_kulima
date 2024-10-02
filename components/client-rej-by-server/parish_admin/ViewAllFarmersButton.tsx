@@ -4,27 +4,102 @@ import { createClient } from "@/utils/supabase/client";
 import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { RefreshCcw, TableOfContents } from "lucide-react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getUserAccType } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 
-const supabase = createClient();
-
 export default function ViewAllFarmersButton() {
+  // const supabase = createClient();
+
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [requests, setRequests] = useState<FarmerResponse[] | null>(null);
+  // // const [requests_data, setRequestsData] = useState<FarmerResponse[] | null>(
+  // //   null
+  // // );
+  // const [displayReqs, setDisplayReqs] = useState<
+  //   FarmerResponse[] | null | undefined
+  // >(null);
+  // const [review, setReview] = useState<string | null>(null);
+  // const [firstName, setFirstName] = useState<string>();
+  // const router = useRouter();
+
+  // useEffect(() => {
+  //   setDisplayReqs(requests);
+  // }, [requests]);
+
+  // const makeAPIcall = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const requests = await fetch("/api/view-farmers", {
+  //       method: "GET",
+  //     });
+
+  //     const parsedRequests = await requests.json();
+
+  //     if (parsedRequests.error) return toast.error(parsedRequests.error);
+
+  //     if (!parsedRequests.error) {
+  //       setRequests(parsedRequests.data);
+  //     }
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   makeAPIcall();
+  // }, []);
+
+  // useEffect(() => {
+  //   const channels = supabase
+  //     .channel("custom-all-channel")
+  //     .on(
+  //       "postgres_changes",
+  //       { event: "*", schema: "public", table: "farmers" },
+  //       (payload) => {
+  //         console.log("Change received!", payload);
+  //         makeAPIcall();
+  //       }
+  //     )
+  //     .subscribe();
+
+  //   return () => {
+  //     supabase.removeChannel(channels);
+  //   };
+  // }, []);
+
+  // const handleFirstNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+  //   setFirstName(event.target.value.trim());
+  // };
+
+  // useEffect(() => {
+  //   if (firstName) {
+  //     setDisplayReqs((prev) => {
+  //       return prev
+  //         ? prev?.filter(
+  //             (item) =>
+  //               item.first_name
+  //                 .toLowerCase()
+  //                 .includes(firstName.toLowerCase()) ||
+  //               item.last_name.toLowerCase().includes(firstName.toLowerCase())
+  //           )
+  //         : null;
+  //     });
+  //   } else {
+  //     setDisplayReqs(requests);
+  //   }
+  // }, [firstName]);
+  const supabase = createClient();
+
   const [isLoading, setIsLoading] = useState(false);
   const [requests, setRequests] = useState<FarmerResponse[] | null>(null);
-  const [requests_data, setRequestsData] = useState<FarmerResponse[] | null>(
-    null
-  );
+  const [displayReqs, setDisplayReqs] = useState<
+    FarmerResponse[] | null | undefined
+  >(null);
   const [review, setReview] = useState<string | null>(null);
-  const [firstName, setFirstName] = useState<string>();
-  const router = useRouter();
-
-  useEffect(() => {
-    setRequests(requests_data);
-  }, [requests_data]);
+  const [firstName, setFirstName] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   const [role, setRole] = useState<string>("");
 
@@ -39,6 +114,7 @@ export default function ViewAllFarmersButton() {
 
   const makeAPIcall = async () => {
     setIsLoading(true);
+
     try {
       const requests = await fetch("/api/view-farmers", {
         method: "GET",
@@ -49,7 +125,7 @@ export default function ViewAllFarmersButton() {
       if (parsedRequests.error) return toast.error(parsedRequests.error);
 
       if (!parsedRequests.error) {
-        setRequestsData(parsedRequests.data);
+        setRequests(parsedRequests.data);
       }
     } finally {
       setIsLoading(false);
@@ -57,65 +133,73 @@ export default function ViewAllFarmersButton() {
   };
 
   useEffect(() => {
+    setDisplayReqs(requests);
+  }, [requests]);
+
+  useEffect(() => {
     makeAPIcall();
   }, []);
 
-  useEffect(() => {
-    const channels = supabase
-      .channel("custom-all-channel")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "farmers" },
-        (payload) => {
-          console.log("Change received!", payload);
-          makeAPIcall();
-        }
-      )
-      .subscribe();
+  const router = useRouter();
 
-    return () => {
-      supabase.removeChannel(channels);
-    };
-  }, []);
-
-  const handleFirstNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFirstName(event.target.value.trim());
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setFirstName(value.trim());
+    return;
   };
 
   useEffect(() => {
     if (firstName) {
-      setRequests((prev) => {
+      setDisplayReqs((prev) => {
         return prev
-          ? prev?.filter((item) =>
-              item.first_name.toLowerCase().includes(firstName.toLowerCase())
+          ? prev?.filter(
+              (item) =>
+                item.first_name
+                  .toLowerCase()
+                  .includes(firstName.toLowerCase()) ||
+                item.last_name.toLowerCase().includes(firstName.toLowerCase())
             )
           : null;
       });
     } else {
-      setRequests(requests_data);
+      setDisplayReqs(requests);
     }
   }, [firstName]);
 
+  useEffect(() => {
+    console.log({displayReqs});
+    
+  }, [displayReqs])
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
+ 
 
   return (
     <div>
       <div className="w-full flex flex-col md:flex-row justify-between  mb-3">
         <div className="flex-1 mb-4 md:mb-0 md:pr-5">
-          <input
+          {/* <input
             type="text"
-            name="first_name"
-            onChange={handleFirstNameChange}
+            name="firstName"
+            onChange={handleInputChange}
             placeholder="Search by name"
             className="w-full border-2 border-gray-300 rounded-md p-2"
+          /> */}
+          <Input
+            id="first_name"
+            name="first_name"
+            placeholder="Search by name"
+            maxLength={20}
+            onChange={handleInputChange}
+            type="text"
           />
-          {/* <Input
-          id="first_name"
-          name="first_name"
-          placeholder="Search by name"
-          maxLength={20}
-          onChange={handleFirstNameChange}
-          type="text"
-        /> */}
         </div>
         <button
           className="bg-gray-300 text-gray-500 w-fit px-5 py-2 rounded-lg"
@@ -139,19 +223,19 @@ export default function ViewAllFarmersButton() {
       </div>
 
       <div>
-        {requests && requests?.length > 0 ? (
+        {displayReqs && displayReqs?.length > 0 ? (
           <h1 className="font-semibold tracking-wide text-lg mb-4">
-            {requests?.length}&nbsp;Farmer{requests.length > 1 ? "s" : ""}{" "}
+            {displayReqs?.length}&nbsp;Farmer{displayReqs.length > 1 ? "s" : ""}{" "}
           </h1>
         ) : (
           <h1 className="font-semibold tracking-wide text-lg my-4">
             There are no farmers in your region.
           </h1>
         )}
-        {requests
+        {displayReqs
           ?.sort((a, b) => a.first_name.localeCompare(b.first_name))
-          .map((request) => (
-            <div key={request?.tel?.[0]}>
+          ?.map((request) => (
+            <div key={request.farmer_uid}>
               <div className="flex flex-row justify-between border-2 rounded-md p-3 mt-1">
                 <div className="flex-1 flex flex-col md:flex-row justify-evenly">
                   {/* requestor name and requested position */}

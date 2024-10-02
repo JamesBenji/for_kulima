@@ -3,7 +3,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createClient } from "@/utils/supabase/client";
-import { RefreshCcw, TableOfContents } from "lucide-react";
+import { RefreshCcw, SlidersHorizontal, TableOfContents } from "lucide-react";
 import Image from "next/image";
 import RevokeAccessButton from "./RevokeAccessButton";
 import ReGrantAccessButton from "./ReGrantAccessButton";
@@ -11,9 +11,10 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const supabase = createClient();
 
 export default function ViewDistrictAdminsButton() {
+  const supabase = createClient();
+
   const [isLoading, setIsLoading] = useState(false);
   const [requests, setRequests] = useState<ParishAdminResponse[] | null>(null);
   const [displayReqs, setDisplayReqs] = useState<
@@ -77,7 +78,9 @@ export default function ViewDistrictAdminsButton() {
     return;
   };
 
+
   useEffect(() => {
+
     if (firstName) {
       setDisplayReqs((prev) => {
         return prev
@@ -99,7 +102,6 @@ export default function ViewDistrictAdminsButton() {
     setIsMounted(true);
   }, []);
 
-
   if (!isMounted) {
     return null;
   }
@@ -115,6 +117,9 @@ export default function ViewDistrictAdminsButton() {
           onChange={handleInputChange}
           type="text"
         />
+        <div>
+         
+        </div>
         <button
           className="bg-gray-300 text-gray-500 px-5 py-2 rounded-lg"
           onClick={makeAPIcall}
@@ -171,7 +176,7 @@ export default function ViewDistrictAdminsButton() {
                       {request.first_name} {request.last_name}
                     </h1>
                     <h2 className="font-light text-sm text-gray-500">
-                      {request.allocation || "Disrict, Parish, Village"}
+                      {request?.allocation}
                     </h2>
                   </div>
                   {/* Review button */}

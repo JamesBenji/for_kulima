@@ -40,7 +40,7 @@ export default function RootLayout({
               <nav className=" w-full flex justify-center border-b border-b-foreground/10 h-16">
                 <div className="w-full md:max-w-5xl flex justify-between items-center md:p-3 md:px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold  rounded-md">
-                    <Link href={`${defaultUrl}/`} className="text-xl md:text-2xl px-5 md:px-0 flex align-text-bottom">
+                    <Link href={`/`} className="text-xl md:text-2xl px-5 md:px-0 flex align-text-bottom">
                       Kulima
                       <ArrowUpRight size={14} strokeWidth={3} className=""/>
                     </Link>
