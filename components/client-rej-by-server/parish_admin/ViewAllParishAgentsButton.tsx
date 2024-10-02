@@ -1,7 +1,7 @@
 "use client";
 
 import { createClient } from "@/utils/supabase/client";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import ReGrantAgentAccessButton from "./ReGrantAgentAccessButton";
 import RevokeAgentAccessButton from "./RevokeAgentAccessButton";
@@ -11,6 +11,7 @@ import { User } from "@supabase/supabase-js";
 import { getUserAccType } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 const supabase = createClient();
 
@@ -19,8 +20,12 @@ export default function ViewAllParishAgentsButton() {
   const [requests, setRequests] = useState<AccountApplicationData[] | null>(
     null
   );
+  const [displayReqs, setDisplayReqs] = useState<
+  AccountApplicationData[] | null | undefined
+  >(null);
+
   const [review, setReview] = useState<string | null>(null);
-  
+  const [firstName, setFirstName] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
@@ -35,21 +40,16 @@ export default function ViewAllParishAgentsButton() {
   }, []);
 
   useEffect(() => {
+    setDisplayReqs(requests);
+  }, [requests]);
+
+  useEffect(() => {
     if (user?.email)
       getUserAccType(user?.email).then((response) => {
         setRole(response);
       });
   }, [user]);
 
-  const toggleReviewSection = (id: string) => {
-    if (review) {
-      setReview((prev) => {
-        return prev === id ? null : id;
-      });
-    } else {
-      setReview(id);
-    }
-  };
 
   const makeAPIcall = async () => {
     setIsLoading(true);
@@ -74,6 +74,30 @@ export default function ViewAllParishAgentsButton() {
     makeAPIcall();
   }, []);
 
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setFirstName(value.trim());
+    return;
+  };
+
+  useEffect(() => {
+    if (firstName) {
+      setDisplayReqs((prev) => {
+        return prev
+          ? prev?.filter(
+              (item) =>
+                item.first_name
+                  .toLowerCase()
+                  .includes(firstName.toLowerCase()) ||
+                item.last_name.toLowerCase().includes(firstName.toLowerCase())
+            )
+          : null;
+      });
+    } else {
+      setDisplayReqs(requests);
+    }
+  }, [firstName]);
+
   useEffect(() => {
     const channels = supabase
       .channel("custom-all-channel")
@@ -96,7 +120,15 @@ export default function ViewAllParishAgentsButton() {
 
   return (
     <div>
-      <div className="w-full mb-4 md:flex md:flex-row ">
+      <div className="w-full mb-4 md:flex md:flex-row md:mb-4 gap-2">
+      <Input
+          id="first_name"
+          name="first_name"
+          placeholder="Search by name"
+          maxLength={20}
+          onChange={handleInputChange}
+          type="text"
+        />
         <button
           className="bg-gray-300 text-gray-500 px-5 py-2 rounded-lg"
           onClick={makeAPIcall}
@@ -119,16 +151,16 @@ export default function ViewAllParishAgentsButton() {
       </div>
 
       <div>
-        {requests && requests?.length > 0 ? (
+        {displayReqs && displayReqs?.length > 0 ? (
           <h1 className="font-semibold tracking-wide text-lg mb-4">
-            {requests?.length}&nbsp;Field agent{requests.length > 1 ? "s" : ""}{" "}
+            {displayReqs?.length}&nbsp;Field agent{displayReqs.length > 1 ? "s" : ""}{" "}
           </h1>
         ) : (
           <h1 className="font-semibold tracking-wide text-lg my-4">
             There are no field agents.
           </h1>
         )}
-        {requests
+        {displayReqs
           ?.sort((a, b) => a.first_name.localeCompare(b.first_name))
           .map((request) => (
             <div key={request.email} className="my-2">

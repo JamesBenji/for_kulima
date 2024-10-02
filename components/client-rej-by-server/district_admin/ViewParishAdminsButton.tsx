@@ -1,7 +1,7 @@
 "use client";
 
 import { createClient } from "@/utils/supabase/client";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BadgeAlert, RefreshCcw, TableOfContents } from "lucide-react";
 import Image from "next/image";
@@ -11,12 +11,17 @@ import { Button } from "@/components/ui/button";
 import ReGrantAccessButton from "../ministry_admin/ReGrantAccessButton";
 import { useRouter } from "next/navigation";
 import { getUserAccType } from "@/app/actions";
-
+import { Input } from "@/components/ui/input";
 
 export default function ViewAllParishAgentsButton() {
   const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
   const [requests, setRequests] = useState<ParishAdminResponse[] | null>(null);
+  const [displayReqs, setDisplayReqs] = useState<
+    ParishAdminResponse[] | null | undefined
+  >(null);
+  const [firstName, setFirstName] = useState<string | null>(null);
+
   const [review, setReview] = useState<string | null>(null);
   const [role, setRole] = useState<string>("");
   useEffect(() => {
@@ -54,6 +59,34 @@ export default function ViewAllParishAgentsButton() {
   }, []);
 
   useEffect(() => {
+    setDisplayReqs(requests);
+  }, [requests]);
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setFirstName(value.trim());
+    return;
+  };
+
+  useEffect(() => {
+    if (firstName) {
+      setDisplayReqs((prev) => {
+        return prev
+          ? prev?.filter(
+              (item) =>
+                item.first_name
+                  .toLowerCase()
+                  .includes(firstName.toLowerCase()) ||
+                item.last_name.toLowerCase().includes(firstName.toLowerCase())
+            )
+          : null;
+      });
+    } else {
+      setDisplayReqs(requests);
+    }
+  }, [firstName]);
+
+  useEffect(() => {
     const channels = supabase
       .channel("custom-all-channel")
       .on(
@@ -73,7 +106,15 @@ export default function ViewAllParishAgentsButton() {
 
   return (
     <div>
-      <div className="w-full mb-4 md:flex md:flex-row ">
+      <div className="w-full mb-4 md:flex md:flex-row md:mb-4 gap-2">
+      <Input
+          id="first_name"
+          name="first_name"
+          placeholder="Search by name"
+          maxLength={20}
+          onChange={handleInputChange}
+          type="text"
+        />
         <button
           className="bg-gray-300 text-gray-500 px-5 py-2 rounded-lg"
           onClick={makeAPIcall}
@@ -96,17 +137,17 @@ export default function ViewAllParishAgentsButton() {
       </div>
 
       <div>
-        {requests && requests?.length > 0 ? (
+        {displayReqs && displayReqs?.length > 0 ? (
           <h1 className="font-semibold tracking-wide text-lg mb-3">
-            {requests?.length}&nbsp;Parish administrator
-            {requests.length > 1 ? "s" : ""}{" "}
+            {displayReqs?.length}&nbsp;Parish administrator
+            {displayReqs.length > 1 ? "s" : ""}{" "}
           </h1>
         ) : (
           <h1 className="font-semibold tracking-wide text-lg my-4">
             There are no parish administrators.
           </h1>
         )}
-        {requests
+        {displayReqs
           ?.sort((a, b) => a.first_name.localeCompare(b.first_name))
           .map((request) => (
             <div key={request.email} className="my-2">
@@ -137,7 +178,7 @@ export default function ViewAllParishAgentsButton() {
                   <div className="  md:flex md:flex-row md:basis-2/3 md:align-middle md:justify-evenly p-2">
                     <Button
                       asChild
-                      className={`${role !== "district_admin" ? 'ml-auto' : ''} px-5 py-2 mb-3 md:mb-0 hover:bg-blue-700 hover:text-white rounded-lg w-full md:w-fit border-blue-300 border-[1.5px] shadow-sm hover:underline bg-blue-200 text-blue-800`}
+                      className={`${role !== "district_admin" ? "ml-auto" : ""} px-5 py-2 mb-3 md:mb-0 hover:bg-blue-700 hover:text-white rounded-lg w-full md:w-fit border-blue-300 border-[1.5px] shadow-sm hover:underline bg-blue-200 text-blue-800`}
                       onClick={() => {
                         toast("Loading", { duration: 2000 });
                         localStorage.setItem(

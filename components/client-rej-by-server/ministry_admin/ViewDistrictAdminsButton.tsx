@@ -11,7 +11,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-
 export default function ViewDistrictAdminsButton() {
   const supabase = createClient();
 
@@ -78,9 +77,7 @@ export default function ViewDistrictAdminsButton() {
     return;
   };
 
-
   useEffect(() => {
-
     if (firstName) {
       setDisplayReqs((prev) => {
         return prev
@@ -117,9 +114,6 @@ export default function ViewDistrictAdminsButton() {
           onChange={handleInputChange}
           type="text"
         />
-        <div>
-         
-        </div>
         <button
           className="bg-gray-300 text-gray-500 px-5 py-2 rounded-lg"
           onClick={makeAPIcall}

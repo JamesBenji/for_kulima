@@ -136,7 +136,7 @@ export default async function AuthButton() {
         variant="outline"
         className="bg-gradient-to-tr to-[#17acff] from-[#00ff00] text-white"
       >
-        <Link href={`${defaultUrl}/sign-in`}>Sign in</Link>
+        <Link href={`/sign-in`}>Sign in</Link>
       </Button>
       <Button
         asChild
@@ -144,7 +144,7 @@ export default async function AuthButton() {
         variant="default"
         className="bg-white text-black light:hover:bg-black/5 hover:text-white dark:hover:text-black"
       >
-        <Link href={`${defaultUrl}/sign-up`}>Sign up</Link>
+        <Link href={`/sign-up`}>Sign up</Link>
       </Button>
     </div>
   )
