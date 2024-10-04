@@ -144,7 +144,7 @@ export default function ParishAdminFromDistrictAdmin({
 
   if(farms.length === 0){
     return <div className=" w-full flex align-middle justify-center py-5">
-      <p>No farms found</p>
+      <p>No parish administrators found</p>
     </div>
   }
 
