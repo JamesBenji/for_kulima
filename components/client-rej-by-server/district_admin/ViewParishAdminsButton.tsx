@@ -12,6 +12,7 @@ import ReGrantAccessButton from "../ministry_admin/ReGrantAccessButton";
 import { useRouter } from "next/navigation";
 import { getUserAccType } from "@/app/actions";
 import { Input } from "@/components/ui/input";
+import FilterByDistrict from "@/components/filter/FilterByDistrict";
 
 export default function ViewAllParishAgentsButton() {
   const supabase = createClient();
@@ -21,6 +22,7 @@ export default function ViewAllParishAgentsButton() {
     ParishAdminResponse[] | null | undefined
   >(null);
   const [firstName, setFirstName] = useState<string | null>(null);
+  const [filterDistrict, setFilterDistrict] = useState<string>("");
 
   const [review, setReview] = useState<string | null>(null);
   const [role, setRole] = useState<string>("");
@@ -53,6 +55,38 @@ export default function ViewAllParishAgentsButton() {
       setIsLoading(false);
     }
   };
+
+  const clearDistrictFilter = () => {
+    setFilterDistrict("");
+  };
+
+  useEffect(() => {
+    if (firstName && filterDistrict === "") {
+      setDisplayReqs(
+        requests?.filter(
+          (item) =>
+            item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+            item.last_name.toLowerCase().includes(firstName.toLowerCase())
+        )
+      );
+    } else if (firstName && filterDistrict) {
+      setDisplayReqs(
+        requests?.filter(
+          (item) =>
+            (item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+              item.last_name.toLowerCase().includes(firstName.toLowerCase())) &&
+            item.district === filterDistrict
+        )
+      );
+    } else if (!firstName && filterDistrict) {
+      setDisplayReqs(
+        requests?.filter((item) => item.district === filterDistrict)
+      );
+    } else {
+      console.log("4th condition");
+      setDisplayReqs(requests);
+    }
+  }, [firstName, filterDistrict]);
 
   useEffect(() => {
     makeAPIcall();
@@ -134,6 +168,16 @@ export default function ViewAllParishAgentsButton() {
             </span>
           )}
         </button>
+      </div>
+
+      <div className="w-full flex align-middle gap-4 my-2">
+        <FilterByDistrict state={filterDistrict} setState={setFilterDistrict} />
+        <Button
+          className="bg-gray-300 text-black hover:bg-white"
+          onClick={clearDistrictFilter}
+        >
+          Clear filter
+        </Button>
       </div>
 
       <div>

@@ -121,6 +121,8 @@ export default function ParishAdminFromDistrictAdmin({
     fetchFarms();
   }, [email]);
 
+  
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -138,6 +140,12 @@ export default function ParishAdminFromDistrictAdmin({
         </Button>
       </div>
     );
+  }
+
+  if(farms.length === 0){
+    return <div className=" w-full flex align-middle justify-center py-5">
+      <p>No farms found</p>
+    </div>
   }
 
   return (

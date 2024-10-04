@@ -12,6 +12,7 @@ import { getUserAccType } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import FilterByDistrict from "@/components/filter/FilterByDistrict";
 
 const supabase = createClient();
 
@@ -21,8 +22,9 @@ export default function ViewAllParishAgentsButton() {
     null
   );
   const [displayReqs, setDisplayReqs] = useState<
-  AccountApplicationData[] | null | undefined
+    AccountApplicationData[] | null | undefined
   >(null);
+  const [filterDistrict, setFilterDistrict] = useState<string>("");
 
   const [review, setReview] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string | null>(null);
@@ -30,6 +32,10 @@ export default function ViewAllParishAgentsButton() {
   const [user, setUser] = useState<User | null>(null);
 
   const router = useRouter();
+
+  const clearDistrictFilter = () => {
+    setFilterDistrict("");
+  };
 
   useEffect(() => {
     supabase.auth.getUser().then((response) => {
@@ -50,13 +56,12 @@ export default function ViewAllParishAgentsButton() {
       });
   }, [user]);
 
-
   const makeAPIcall = async () => {
     setIsLoading(true);
     try {
       const requests = await fetch("/api/view-field-agents", {
         method: "GET",
-      });   
+      });
 
       const parsedRequests = await requests.json();
 
@@ -81,22 +86,32 @@ export default function ViewAllParishAgentsButton() {
   };
 
   useEffect(() => {
-    if (firstName) {
-      setDisplayReqs((prev) => {
-        return prev
-          ? prev?.filter(
-              (item) =>
-                item.first_name
-                  .toLowerCase()
-                  .includes(firstName.toLowerCase()) ||
-                item.last_name.toLowerCase().includes(firstName.toLowerCase())
-            )
-          : null;
-      });
+    if (firstName && filterDistrict === "") {
+      setDisplayReqs(
+        requests?.filter(
+          (item) =>
+            item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+            item.last_name.toLowerCase().includes(firstName.toLowerCase())
+        )
+      );
+    } else if (firstName && filterDistrict) {
+      setDisplayReqs(
+        requests?.filter(
+          (item) =>
+            (item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+              item.last_name.toLowerCase().includes(firstName.toLowerCase())) &&
+            item.district === filterDistrict
+        )
+      );
+    } else if (!firstName && filterDistrict) {
+      setDisplayReqs(
+        requests?.filter((item) => item.district === filterDistrict)
+      );
     } else {
+      console.log("4th condition");
       setDisplayReqs(requests);
     }
-  }, [firstName]);
+  }, [firstName, filterDistrict]);
 
   useEffect(() => {
     const channels = supabase
@@ -116,12 +131,10 @@ export default function ViewAllParishAgentsButton() {
     };
   }, []);
 
-
-
   return (
     <div>
       <div className="w-full mb-4 md:flex md:flex-row md:mb-4 gap-2">
-      <Input
+        <Input
           id="first_name"
           name="first_name"
           placeholder="Search by name"
@@ -150,10 +163,21 @@ export default function ViewAllParishAgentsButton() {
         </button>
       </div>
 
+      <div className="w-full flex align-middle gap-4 my-2">
+        <FilterByDistrict state={filterDistrict} setState={setFilterDistrict} />
+        <Button
+          className="bg-gray-300 text-black hover:bg-white"
+          onClick={clearDistrictFilter}
+        >
+          Clear filter
+        </Button>
+      </div>
+
       <div>
         {displayReqs && displayReqs?.length > 0 ? (
           <h1 className="font-semibold tracking-wide text-lg mb-4">
-            {displayReqs?.length}&nbsp;Field agent{displayReqs.length > 1 ? "s" : ""}{" "}
+            {displayReqs?.length}&nbsp;Field agent
+            {displayReqs.length > 1 ? "s" : ""}{" "}
           </h1>
         ) : (
           <h1 className="font-semibold tracking-wide text-lg my-4">
@@ -188,7 +212,7 @@ export default function ViewAllParishAgentsButton() {
                   </div>
                   {/* Review button */}
                   <div className="md:flex md:flex-row md:basis-2/3 md:align-middle md:justify-evenly p-2">
-                  <Button
+                    <Button
                       asChild
                       // className={`${role !== 'district_admin' && role !== 'parish_admin' ? 'ml-auto' : ''} px-5 py-2 mb-3 md:mb-0 hover:bg-blue-700 hover:text-white rounded-lg w-full md:w-fit border-blue-300 border-[1px] shadow-sm hover:underline bg-blue-200 text-blue-800`}
                       className={` px-5 py-2 mb-3 md:mb-0 hover:bg-blue-700 hover:text-white rounded-lg w-full md:w-fit border-blue-300 border-[1px] shadow-sm hover:underline bg-blue-200 text-blue-800`}
@@ -202,28 +226,27 @@ export default function ViewAllParishAgentsButton() {
                       }}
                     >
                       <div className="flex flex-row align-middle justify-center md:justify-start gap-1">
-                        <TableOfContents
-                          size={20}
-                          className=""
-                        />
+                        <TableOfContents size={20} className="" />
                         <span>&nbsp;View details</span>
                       </div>
                     </Button>
 
                     {/* {role === 'parish_admin' && <div className="md:flex md:flex-row  md:align-middle md:justify-evenly"> */}
-                    { <div className="md:flex md:flex-row  md:align-middle md:justify-evenly">
-                    {request.hasAccess ? (
-                      <RevokeAgentAccessButton
-                        refresh={makeAPIcall}
-                        email={request.email!}
-                      />
-                    ) : (
-                      <ReGrantAgentAccessButton
-                        email={request.email!}
-                        refresh={makeAPIcall}
-                      />
-                    )}
-                    </div>}
+                    {
+                      <div className="md:flex md:flex-row  md:align-middle md:justify-evenly">
+                        {request.hasAccess ? (
+                          <RevokeAgentAccessButton
+                            refresh={makeAPIcall}
+                            email={request.email!}
+                          />
+                        ) : (
+                          <ReGrantAgentAccessButton
+                            email={request.email!}
+                            refresh={makeAPIcall}
+                          />
+                        )}
+                      </div>
+                    }
                   </div>
                 </div>
                 {/* review section */}

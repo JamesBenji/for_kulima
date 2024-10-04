@@ -115,7 +115,7 @@ export async function viewAllDistrictAdmins(
   const { data: allDistrictAdmins, error } = await supabase
     .from("district_admin")
     .select(
-      "created_at, email, first_name, sys_role, image, last_name, phone_number, organization, position, gender, allocation, granted_by, hasAccess"
+      "created_at, email, first_name, sys_role, image, last_name, phone_number, organization, position, gender, allocation, granted_by, hasAccess, district, parish"
     );
 
   if (error) return { error };

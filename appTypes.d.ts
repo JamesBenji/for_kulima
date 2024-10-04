@@ -22,6 +22,12 @@ type Actions = {
   component: React.ReactNode;
 };
 
+
+type Coordinates = {
+  lat: number;
+  lon: number
+}[]
+
 type FarmerResponse = {
   first_name: string;
   last_name: string;
@@ -40,6 +46,9 @@ type FarmerResponse = {
   address: string;
   farmer_uid?: number;
   image?: string;
+  district?: string;
+  parish?: string
+
 };
 
 type FarmResponse = {
@@ -47,7 +56,7 @@ type FarmResponse = {
   land_units: string;
   crops: string[];
   location: string;
-  geo_location: string[];
+  geo_location: Coordinates;
   average_quantity_produced: number;
   quantity_units: string;
   labourers: number;
@@ -116,3 +125,4 @@ type ApplicantFields = {
   email?: string;
   image: File | null;
 };
+

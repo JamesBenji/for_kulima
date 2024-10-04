@@ -10,6 +10,7 @@ import ReGrantAccessButton from "./ReGrantAccessButton";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import FilterByDistrict from "@/components/filter/FilterByDistrict";
 
 export default function ViewDistrictAdminsButton() {
   const supabase = createClient();
@@ -22,6 +23,7 @@ export default function ViewDistrictAdminsButton() {
   const [review, setReview] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [filterDistrict, setFilterDistrict] = useState<string>("");
 
   const makeAPIcall = async () => {
     setIsLoading(true);
@@ -41,6 +43,10 @@ export default function ViewDistrictAdminsButton() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const clearDistrictFilter = () => {
+    setFilterDistrict("");
   };
 
   useEffect(() => {
@@ -77,23 +83,34 @@ export default function ViewDistrictAdminsButton() {
     return;
   };
 
+
   useEffect(() => {
-    if (firstName) {
-      setDisplayReqs((prev) => {
-        return prev
-          ? prev?.filter(
-              (item) =>
-                item.first_name
-                  .toLowerCase()
-                  .includes(firstName.toLowerCase()) ||
-                item.last_name.toLowerCase().includes(firstName.toLowerCase())
-            )
-          : null;
-      });
+    if (firstName && filterDistrict === "") {
+      setDisplayReqs(
+        requests?.filter(
+          (item) =>
+            item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+            item.last_name.toLowerCase().includes(firstName.toLowerCase())
+        )
+      );
+    } else if (firstName && filterDistrict) {
+      setDisplayReqs(
+        requests?.filter(
+          (item) =>
+            (item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+              item.last_name.toLowerCase().includes(firstName.toLowerCase())) &&
+            item.district === filterDistrict
+        )
+      );
+    } else if (!firstName && filterDistrict) {
+      setDisplayReqs(
+        requests?.filter((item) => item.district === filterDistrict)
+      );
     } else {
+      console.log("4th condition");
       setDisplayReqs(requests);
     }
-  }, [firstName]);
+  }, [firstName, filterDistrict]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -115,7 +132,7 @@ export default function ViewDistrictAdminsButton() {
           type="text"
         />
         <button
-          className="bg-gray-300 text-gray-500 px-5 py-2 rounded-lg"
+          className="bg-gray-300 text-gray-500 px-5 py-2 rounded-lg mt-3 md:mt-0"
           onClick={makeAPIcall}
           disabled={isLoading}
         >
@@ -135,6 +152,16 @@ export default function ViewDistrictAdminsButton() {
         </button>
       </div>
 
+      <div className="w-full flex align-middle gap-4 my-2">
+        <FilterByDistrict state={filterDistrict} setState={setFilterDistrict} />
+        <Button
+          className="bg-gray-300 text-black hover:bg-white"
+          onClick={clearDistrictFilter}
+        >
+          Clear filter
+        </Button>
+      </div>
+
       <div>
         {displayReqs && displayReqs?.length > 0 ? (
           <h1 className="font-semibold tracking-wide text-lg mb-4">
@@ -143,7 +170,7 @@ export default function ViewDistrictAdminsButton() {
           </h1>
         ) : (
           <h1 className="font-semibold tracking-wide text-lg my-4">
-            There are no district administrators.
+            No district administrators found.
           </h1>
         )}
         {displayReqs

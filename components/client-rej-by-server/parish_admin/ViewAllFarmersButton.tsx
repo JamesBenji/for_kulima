@@ -8,88 +8,10 @@ import { Button } from "@/components/ui/button";
 import { getUserAccType } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import FilterByDistrict from "@/components/filter/FilterByDistrict";
 
 export default function ViewAllFarmersButton() {
-  // const supabase = createClient();
-
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [requests, setRequests] = useState<FarmerResponse[] | null>(null);
-  // // const [requests_data, setRequestsData] = useState<FarmerResponse[] | null>(
-  // //   null
-  // // );
-  // const [displayReqs, setDisplayReqs] = useState<
-  //   FarmerResponse[] | null | undefined
-  // >(null);
-  // const [review, setReview] = useState<string | null>(null);
-  // const [firstName, setFirstName] = useState<string>();
-  // const router = useRouter();
-
-  // useEffect(() => {
-  //   setDisplayReqs(requests);
-  // }, [requests]);
-
-  // const makeAPIcall = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     const requests = await fetch("/api/view-farmers", {
-  //       method: "GET",
-  //     });
-
-  //     const parsedRequests = await requests.json();
-
-  //     if (parsedRequests.error) return toast.error(parsedRequests.error);
-
-  //     if (!parsedRequests.error) {
-  //       setRequests(parsedRequests.data);
-  //     }
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   makeAPIcall();
-  // }, []);
-
-  // useEffect(() => {
-  //   const channels = supabase
-  //     .channel("custom-all-channel")
-  //     .on(
-  //       "postgres_changes",
-  //       { event: "*", schema: "public", table: "farmers" },
-  //       (payload) => {
-  //         console.log("Change received!", payload);
-  //         makeAPIcall();
-  //       }
-  //     )
-  //     .subscribe();
-
-  //   return () => {
-  //     supabase.removeChannel(channels);
-  //   };
-  // }, []);
-
-  // const handleFirstNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-  //   setFirstName(event.target.value.trim());
-  // };
-
-  // useEffect(() => {
-  //   if (firstName) {
-  //     setDisplayReqs((prev) => {
-  //       return prev
-  //         ? prev?.filter(
-  //             (item) =>
-  //               item.first_name
-  //                 .toLowerCase()
-  //                 .includes(firstName.toLowerCase()) ||
-  //               item.last_name.toLowerCase().includes(firstName.toLowerCase())
-  //           )
-  //         : null;
-  //     });
-  //   } else {
-  //     setDisplayReqs(requests);
-  //   }
-  // }, [firstName]);
+  
   const supabase = createClient();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -100,6 +22,7 @@ export default function ViewAllFarmersButton() {
   const [review, setReview] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [filterDistrict, setFilterDistrict] = useState<string>("");
 
   const [role, setRole] = useState<string>("");
 
@@ -111,6 +34,10 @@ export default function ViewAllFarmersButton() {
       }
     });
   }, []);
+
+  const clearDistrictFilter = () => {
+    setFilterDistrict("");
+  };
 
   const makeAPIcall = async () => {
     setIsLoading(true);
@@ -148,28 +75,34 @@ export default function ViewAllFarmersButton() {
     return;
   };
 
+  
   useEffect(() => {
-    if (firstName) {
-      setDisplayReqs((prev) => {
-        return prev
-          ? prev?.filter(
-              (item) =>
-                item.first_name
-                  .toLowerCase()
-                  .includes(firstName.toLowerCase()) ||
-                item.last_name.toLowerCase().includes(firstName.toLowerCase())
-            )
-          : null;
-      });
+    if (firstName && filterDistrict === "") {
+      setDisplayReqs(
+        requests?.filter(
+          (item) =>
+            item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+            item.last_name.toLowerCase().includes(firstName.toLowerCase())
+        )
+      );
+    } else if (firstName && filterDistrict) {
+      setDisplayReqs(
+        requests?.filter(
+          (item) =>
+            (item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+              item.last_name.toLowerCase().includes(firstName.toLowerCase())) &&
+            item.district === filterDistrict
+        )
+      );
+    } else if (!firstName && filterDistrict) {
+      setDisplayReqs(
+        requests?.filter((item) => item.district === filterDistrict)
+      );
     } else {
+      console.log("4th condition");
       setDisplayReqs(requests);
     }
-  }, [firstName]);
-
-  useEffect(() => {
-    console.log({displayReqs});
-    
-  }, [displayReqs])
+  }, [firstName, filterDistrict]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -185,13 +118,7 @@ export default function ViewAllFarmersButton() {
     <div>
       <div className="w-full flex flex-col md:flex-row justify-between  mb-3">
         <div className="flex-1 mb-4 md:mb-0 md:pr-5">
-          {/* <input
-            type="text"
-            name="firstName"
-            onChange={handleInputChange}
-            placeholder="Search by name"
-            className="w-full border-2 border-gray-300 rounded-md p-2"
-          /> */}
+         
           <Input
             id="first_name"
             name="first_name"
@@ -220,6 +147,16 @@ export default function ViewAllFarmersButton() {
             </span>
           )}
         </button>
+      </div>
+
+      <div className="w-full flex align-middle gap-4 my-2">
+        <FilterByDistrict state={filterDistrict} setState={setFilterDistrict} />
+        <Button
+          className="bg-gray-300 text-black hover:bg-white"
+          onClick={clearDistrictFilter}
+        >
+          Clear filter
+        </Button>
       </div>
 
       <div>
@@ -415,8 +352,6 @@ export default function ViewAllFarmersButton() {
           ))}
       </div>
     </div>
-    // <button onClick={makeAPIcall} disabled={isLoading}>
-    //   {isLoading ? "Fetching data..." : "View field agents"}
-    // </button>
+    
   );
 }

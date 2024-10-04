@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link, Loader2 } from "lucide-react";
 import { LinearGradient } from "react-text-gradients";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const getKeys = (obj: any) => {
   if (obj) return typeof obj === "object" ? Object.keys(obj) : [];
@@ -19,7 +20,6 @@ const headingKeys = [
   "tel",
   "farmer_uid",
 ];
-
 
 function getMonthName(monthNumber: number): string {
   const monthNames = [
@@ -39,7 +39,6 @@ function getMonthName(monthNumber: number): string {
 
   return monthNames[monthNumber];
 }
-
 
 const generateColumnArrays = (arr: string[] | undefined) => {
   if (arr) {
@@ -65,6 +64,8 @@ export default function FarmCard() {
   const [isMounted, setIsMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showGallery, setShowGallery] = useState<boolean>(false);
+  const [mapBtnClicked, setMapBtnClicked] = useState<boolean>(false);
+  const router = useRouter();
 
   const keys = useMemo(() => getKeys(farm), [farm]);
   const otherKeys = useMemo(
@@ -75,10 +76,11 @@ export default function FarmCard() {
     [keys]
   );
 
-  const columnArrays = useMemo(
-    () => generateColumnArrays(otherKeys),
-    [otherKeys]
-  );
+  const routeToMap = (coordinates: Coordinates) => {
+    const searchParams = new URLSearchParams();
+    searchParams.set("coords", JSON.stringify(coordinates));
+    router.push(`/protected/map?${searchParams.toString()}`);
+  };
 
   useEffect(() => {
     // Set the mounted state to true once the component is mounted
@@ -184,8 +186,7 @@ export default function FarmCard() {
                         <span className="font-semibold text-base tracking-normal text-gray-500">
                           AVERAGE QUANTITY PER HARVEST:&nbsp;
                         </span>
-                        {farm?.average_quantity_produced}{" "}
-                        {farm?.quantity_units}
+                        {farm?.average_quantity_produced} {farm?.quantity_units}
                       </p>
 
                       <p className="flex flex-col justify-between align-middle py-2">
@@ -326,9 +327,7 @@ export default function FarmCard() {
                                 <span>
                                   {farm?.fertilizers?.[0].type} {"\t"}
                                 </span>
-                                <span>
-                                  {farm?.fertilizers?.[0].frequency}
-                                </span>
+                                <span>{farm?.fertilizers?.[0].frequency}</span>
                               </li>
                             ) : (
                               "Undefined"
@@ -358,6 +357,16 @@ export default function FarmCard() {
                         </span>
                         {farm?.added_by ? farm?.added_by : "Undefined"}
                       </p>
+
+                      <Button
+                        onClick={() => {
+                          routeToMap(farm.geo_location);
+                          setMapBtnClicked(true)
+                        }}
+                        className="my-2"
+                      >
+                        {mapBtnClicked ? 'Opening map' : 'See on map'}
+                      </Button>
                     </div>
                   </div>
                 </div>

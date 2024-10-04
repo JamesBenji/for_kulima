@@ -8,10 +8,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { getUserAccType } from "@/app/actions";
-
-const supabase = createClient();
+import FilterByDistrict from "@/components/filter/FilterByDistrict";
 
 export default function ViewAllFarmsButton() {
+  const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
   const [requests, setRequests] = useState<FarmResponse[] | null>(null);
   const [requests_data, setRequestsData] = useState<FarmResponse[] | null>(
@@ -20,6 +20,8 @@ export default function ViewAllFarmsButton() {
   const [review, setReview] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string>();
   const [role, setRole] = useState<string>("");
+  const [filterDistrict, setFilterDistrict] = useState<string>("");
+
   useEffect(() => {
     supabase.auth.getUser().then((res) => {
       const email = res.data.user?.email;
@@ -28,12 +30,20 @@ export default function ViewAllFarmsButton() {
       }
     });
   }, []);
+  const clearDistrictFilter = () => {
+    setFilterDistrict("");
+  };
   const router = useRouter();
+
+  const routeToMaps = (coordinates: Coordinates) => {
+    const searchParams = new URLSearchParams();
+    searchParams.set("coords", JSON.stringify(coordinates));
+    router.push(`/map?${searchParams.toString()}`);
+  };
 
   useEffect(() => {
     setRequests(requests_data);
   }, [requests_data]);
-
 
   const makeAPIcall = async () => {
     setIsLoading(true);
@@ -81,18 +91,29 @@ export default function ViewAllFarmsButton() {
   };
 
   useEffect(() => {
-    if (firstName) {
-      setRequests((prev) => {
-        return prev
-          ? prev?.filter((item) =>
-              item.farm_name.toLowerCase().includes(firstName.toLowerCase())
-            )
-          : null;
-      });
+    if (firstName && filterDistrict === "") {
+      setRequests(
+        requests_data &&
+          requests_data?.filter((item) =>
+            item.farm_name.toLowerCase().includes(firstName.toLowerCase())
+          )
+      );
+    } else if (firstName && filterDistrict) {
+      setRequests(
+        requests_data &&
+          requests_data?.filter((item) => {
+            item.farm_name === firstName && item.district === filterDistrict;
+          })
+      );
+    } else if (!firstName && filterDistrict) {
+      setRequests(
+        requests_data &&
+          requests_data.filter((item) => item.district === filterDistrict)
+      );
     } else {
       setRequests(requests_data);
     }
-  }, [firstName]);
+  }, [firstName, filterDistrict]);
 
   return (
     <div>
@@ -127,14 +148,24 @@ export default function ViewAllFarmsButton() {
         </button>
       </div>
 
+      <div className="w-full flex align-middle gap-4 my-2">
+        <FilterByDistrict state={filterDistrict} setState={setFilterDistrict} />
+        <Button
+          className="bg-gray-300 text-black hover:bg-white"
+          onClick={clearDistrictFilter}
+        >
+          Clear filter
+        </Button>
+      </div>
+
       <div>
         {requests && requests?.length > 0 ? (
           <h1 className="font-semibold tracking-wide text-lg mb-4">
-            {requests?.length}&nbsp;Farmer{requests.length > 1 ? "s" : ""}{" "}
+            {requests?.length}&nbsp;Farm{requests.length > 1 ? "s" : ""}{" "}
           </h1>
         ) : (
           <h1 className="font-semibold tracking-wide text-lg my-4">
-            There are no farmers
+            There are no farms
           </h1>
         )}
         {requests
@@ -154,23 +185,23 @@ export default function ViewAllFarmsButton() {
                   </div>
                   {/* Review button */}
                   <div className="flex flex-row basis-2/3  justify-end p-2">
-                      <Button
-                        asChild
-                        className={`${role !== "district_admin" ? "ml-auto" : ""} px-5 py-2 mb-3 md:mb-0 hover:bg-blue-700 hover:text-white rounded-lg w-full md:w-fit border-blue-300 border-[1.5px] shadow-sm hover:underline bg-blue-200 text-blue-800`}
-                        onClick={() => {
-                          toast("Loading", { duration: 2000 });
-                          localStorage.setItem(
-                            "currentFarm",
-                            JSON.stringify(request)
-                          );
-                          router.push("/protected/details/farm");
-                        }}
-                      >
-                        <div className=" flex flex-row align-middle justify-center md:justify-start gap-1">
-                          <TableOfContents size={20} className="" />
-                          <span>&nbsp;View details</span>
-                        </div>
-                      </Button>
+                    <Button
+                      asChild
+                      className={`${role !== "district_admin" ? "ml-auto" : ""} px-5 py-2 mb-3 md:mb-0 hover:bg-blue-700 hover:text-white rounded-lg w-full md:w-fit border-blue-300 border-[1.5px] shadow-sm hover:underline bg-blue-200 text-blue-800`}
+                      onClick={() => {
+                        toast("Loading", { duration: 2000 });
+                        localStorage.setItem(
+                          "currentFarm",
+                          JSON.stringify(request)
+                        );
+                        router.push("/protected/details/farm");
+                      }}
+                    >
+                      <div className=" flex flex-row align-middle justify-center md:justify-start gap-1">
+                        <TableOfContents size={20} className="" />
+                        <span>&nbsp;View details</span>
+                      </div>
+                    </Button>
                   </div>
                 </div>
                 {/* review section */}
@@ -398,6 +429,20 @@ export default function ViewAllFarmsButton() {
                         </span>
                         {request?.added_by ? request?.added_by : "Undefined"}
                       </p>
+
+                      {request.geo_location ? (
+                        <p>
+                          <Button
+                            onClick={() => routeToMaps(request?.geo_location)}
+                          >
+                            <span>See on map</span>
+                          </Button>
+                        </p>
+                      ) : (
+                        <Button variant={"destructive"}>
+                          No map data available
+                        </Button>
+                      )}
                     </div>
                   </div>
                 )}

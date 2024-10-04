@@ -21,7 +21,7 @@ export async function GET() {
         const { data, error } = await supabase
           .from("farms")
           .select(
-            "land_size, land_units, crops, location, geo_location, average_quantity_produced, quantity_units, labourers, current_machinery, previous_machinery, pests, pest_control, water_source, water_contaminants, land_use, added_by, images, farm_owner, fertilizers, farm_name, type, is_water_contaminated, image_file_name, is_currently_mechanized, previously_mechanized, district, parish"
+            "land_size, land_units, crops, location, geo_location, average_quantity_produced, quantity_units, labourers, current_machinery, previous_machinery, pests, pest_control, water_source, water_contaminants, land_use, added_by, images, farm_owner, fertilizers, farm_name, type, is_water_contaminated, image_file_name, is_currently_mechanized, previously_mechanized, district, parish, geo_location"
           );
 
         if (error) {
@@ -54,7 +54,7 @@ export async function GET() {
         const { data, error } = await supabase
           .from("farms")
           .select(
-            "land_size, land_units, crops, location, geo_location, average_quantity_produced, quantity_units, labourers, current_machinery, previous_machinery, pests, pest_control, water_source, water_contaminants, land_use, added_by, images, farm_owner, fertilizers, farm_name, type, is_water_contaminated, image_file_name, is_currently_mechanized, previously_mechanized, district, parish"
+            "land_size, land_units, crops, location, geo_location, average_quantity_produced, quantity_units, labourers, current_machinery, previous_machinery, pests, pest_control, water_source, water_contaminants, land_use, added_by, images, farm_owner, fertilizers, farm_name, type, is_water_contaminated, image_file_name, is_currently_mechanized, previously_mechanized, district, parish, geo_location"
           )
           .eq("district", district);
 
@@ -86,7 +86,7 @@ export async function GET() {
         const { data, error } = await supabase
           .from("farms")
           .select(
-           "land_size, land_units, crops, location, geo_location, average_quantity_produced, quantity_units, labourers, current_machinery, previous_machinery, pests, pest_control, water_source, water_contaminants, land_use, added_by, images, farm_owner, fertilizers, farm_name, type, is_water_contaminated, image_file_name, is_currently_mechanized, previously_mechanized, district, parish"
+           "land_size, land_units, crops, location, geo_location, average_quantity_produced, quantity_units, labourers, current_machinery, previous_machinery, pests, pest_control, water_source, water_contaminants, land_use, added_by, images, farm_owner, fertilizers, farm_name, type, is_water_contaminated, image_file_name, is_currently_mechanized, previously_mechanized, district, parish, geo_location"
           )
           .eq("district", myArea.district)
           .eq("parish", myArea.parish);

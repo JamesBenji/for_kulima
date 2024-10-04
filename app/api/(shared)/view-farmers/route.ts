@@ -21,7 +21,7 @@ export async function GET() {
         const { data, error } = await supabase
           .from("farmers")
           .select(
-            "first_name, farmer_uid, last_name, dob, email, tel, gender, household_size, no_children, count_school_going, average_income_per_harvest, other_income_sources, added_by, address"
+            "first_name, farmer_uid, last_name, dob, email, tel, gender, household_size, no_children, count_school_going, average_income_per_harvest, other_income_sources, added_by, address, district, parish"
           );
 
         if (error) {
@@ -54,7 +54,7 @@ export async function GET() {
         const { data, error } = await supabase
           .from("farmers")
           .select(
-            "first_name, farmer_uid, last_name, dob, email, tel, gender, household_size, no_children, count_school_going, average_income_per_harvest, other_income_sources, added_by, address"
+            "first_name, farmer_uid, last_name, dob, email, tel, gender, household_size, no_children, count_school_going, average_income_per_harvest, other_income_sources, added_by, address, district, parish"
           )
           .eq("district", district);
 
@@ -86,7 +86,7 @@ export async function GET() {
         const { data, error } = await supabase
           .from("farmers")
           .select(
-            "first_name, last_name, farmer_uid, dob, email, tel, gender, household_size, no_children, count_school_going, average_income_per_harvest, other_income_sources, added_by, address"
+            "first_name, last_name, farmer_uid, dob, email, tel, gender, household_size, no_children, count_school_going, average_income_per_harvest, other_income_sources, added_by, address, district, parish"
           )
           .eq("district", myArea.district)
           .eq("parish", myArea.parish);
@@ -96,7 +96,7 @@ export async function GET() {
           throw new Error("Error: Authorized but failed to fetch the data");
         }
 
-        console.log({data})
+        console.log({ data });
 
         return NextResponse.json(
           {
@@ -109,7 +109,6 @@ export async function GET() {
       if (isMin_admin.error && isDistrict_admin.extra && isParish_admin.extra) {
         throw new Error("You are not authorized to execute this operation.");
       }
-      
     } else {
       throw new Error("Failed to get user session data");
     }

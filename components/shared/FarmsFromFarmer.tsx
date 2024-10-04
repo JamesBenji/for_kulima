@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 type FarmsFromFarmerProps = {
   farmer_uid: number;
@@ -13,6 +14,14 @@ export default function FarmsFromFarmer({ farmer_uid }: FarmsFromFarmerProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showGallery, setShowGallery] = useState<boolean>(false);
+  const router = useRouter();
+  const [mapBtnClicked, setMapBtnClicked] = useState<boolean>(false);
+
+  const routeToMaps = (coordinates: Coordinates) => {
+    const searchParams = new URLSearchParams();
+    searchParams.set("coords", JSON.stringify(coordinates));
+    router.push(`/map?${searchParams.toString()}`);
+  };
 
   useEffect(() => {
     const fetchFarms = async () => {
@@ -329,6 +338,16 @@ export default function FarmsFromFarmer({ farmer_uid }: FarmsFromFarmerProps) {
                                 ? request?.added_by
                                 : "Undefined"}
                             </p>
+
+                            <Button
+                              onClick={() => {
+                                routeToMaps(request.geo_location);
+                                setMapBtnClicked(true);
+                              }}
+                              className="my-2"
+                            >
+                              {mapBtnClicked ? "Opening map" : "See on map"}
+                            </Button>
                           </div>
                         </div>
                       </div>
