@@ -172,14 +172,6 @@ export default function StatsDashboard() {
           <div className="flex flex-1 flex-wrap justify-evenly align-middle">
             <InfoCard
               data={trends}
-              role={role}
-              item="parish_admins"
-              email={email}
-              district={myDistrict}
-              parish={myParish}
-            />
-            <InfoCard
-              data={trends}
               item="field_agents"
               role={role}
               email={email}
