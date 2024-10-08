@@ -12,7 +12,6 @@ import { getUserAccType } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import FilterByDistrict from "@/components/filter/FilterByDistrict";
 
 const supabase = createClient();
 
@@ -24,7 +23,7 @@ export default function ViewAllParishAgentsButton() {
   const [displayReqs, setDisplayReqs] = useState<
     AccountApplicationData[] | null | undefined
   >(null);
-  const [filterDistrict, setFilterDistrict] = useState<string>("");
+  // const [filterDistrict, setFilterDistrict] = useState<string>("");
 
   const [review, setReview] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string | null>(null);
@@ -33,9 +32,9 @@ export default function ViewAllParishAgentsButton() {
 
   const router = useRouter();
 
-  const clearDistrictFilter = () => {
-    setFilterDistrict("");
-  };
+  // const clearDistrictFilter = () => {
+  //   setFilterDistrict("");
+  // };
 
   useEffect(() => {
     supabase.auth.getUser().then((response) => {
@@ -86,7 +85,8 @@ export default function ViewAllParishAgentsButton() {
   };
 
   useEffect(() => {
-    if (firstName && filterDistrict === "") {
+    // if (firstName && filterDistrict === "") {
+    if (firstName) {
       setDisplayReqs(
         requests?.filter(
           (item) =>
@@ -94,24 +94,26 @@ export default function ViewAllParishAgentsButton() {
             item.last_name.toLowerCase().includes(firstName.toLowerCase())
         )
       );
-    } else if (firstName && filterDistrict) {
-      setDisplayReqs(
-        requests?.filter(
-          (item) =>
-            (item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
-              item.last_name.toLowerCase().includes(firstName.toLowerCase())) &&
-            item.district === filterDistrict
-        )
-      );
-    } else if (!firstName && filterDistrict) {
-      setDisplayReqs(
-        requests?.filter((item) => item.district === filterDistrict)
-      );
-    } else {
-      console.log("4th condition");
-      setDisplayReqs(requests);
     }
-  }, [firstName, filterDistrict]);
+    // } else if (firstName && filterDistrict) {
+    // else if (firstName) {
+    //   setDisplayReqs(
+    //     requests?.filter(
+    //       (item) =>
+    //         (item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+    //           item.last_name.toLowerCase().includes(firstName.toLowerCase())) &&
+    //         item.district === filterDistrict
+    //     )
+    //   );
+    // } else if (!firstName && filterDistrict) {
+    //   setDisplayReqs(
+    //     requests?.filter((item) => item.district === filterDistrict)
+    //   );
+    // } else {
+    //   console.log("4th condition");
+    //   setDisplayReqs(requests);
+    // }
+  }, [firstName]);
 
   useEffect(() => {
     const channels = supabase
@@ -161,16 +163,6 @@ export default function ViewAllParishAgentsButton() {
             </span>
           )}
         </button>
-      </div>
-
-      <div className="w-full flex align-middle gap-4 my-2">
-        <FilterByDistrict state={filterDistrict} setState={setFilterDistrict} />
-        <Button
-          className="bg-gray-300 text-black hover:bg-white"
-          onClick={clearDistrictFilter}
-        >
-          Clear filter
-        </Button>
       </div>
 
       <div>

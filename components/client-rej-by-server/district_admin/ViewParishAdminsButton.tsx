@@ -1,18 +1,19 @@
 "use client";
 
 import { createClient } from "@/utils/supabase/client";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { BadgeAlert, RefreshCcw, TableOfContents } from "lucide-react";
 import Image from "next/image";
 import RevokeParishAccessButton from "./RevokeParishAccessButton";
 import ReGrantParishAccessButton from "./ReGrantParishAccessButton";
 import { Button } from "@/components/ui/button";
-import ReGrantAccessButton from "../ministry_admin/ReGrantAccessButton";
 import { useRouter } from "next/navigation";
 import { getUserAccType } from "@/app/actions";
 import { Input } from "@/components/ui/input";
 import FilterByDistrict from "@/components/filter/FilterByDistrict";
+import FilterByParish from "@/components/filter/FilterByParish";
+import useUser from "@/hooks/useUser";
 
 export default function ViewAllParishAgentsButton() {
   const supabase = createClient();
@@ -23,6 +24,11 @@ export default function ViewAllParishAgentsButton() {
   >(null);
   const [firstName, setFirstName] = useState<string | null>(null);
   const [filterDistrict, setFilterDistrict] = useState<string>("");
+  const [filterParish, setFilterParish] = useState<string>("");
+
+  const myData = useUser();
+
+  const myDistrict = useMemo(() => myData?.district, [myData]);
 
   const [review, setReview] = useState<string | null>(null);
   const [role, setRole] = useState<string>("");
@@ -61,32 +67,68 @@ export default function ViewAllParishAgentsButton() {
   };
 
   useEffect(() => {
-    if (firstName && filterDistrict === "") {
-      setDisplayReqs(
-        requests?.filter(
-          (item) =>
-            item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
-            item.last_name.toLowerCase().includes(firstName.toLowerCase())
-        )
-      );
-    } else if (firstName && filterDistrict) {
-      setDisplayReqs(
-        requests?.filter(
-          (item) =>
-            (item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
-              item.last_name.toLowerCase().includes(firstName.toLowerCase())) &&
-            item.district === filterDistrict
-        )
-      );
-    } else if (!firstName && filterDistrict) {
-      setDisplayReqs(
-        requests?.filter((item) => item.district === filterDistrict)
-      );
-    } else {
-      console.log("4th condition");
-      setDisplayReqs(requests);
+    if (role === "ministry_admin") {
+      if (firstName && filterDistrict === "") {
+        setDisplayReqs(
+          requests?.filter(
+            (item) =>
+              item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+              item.last_name.toLowerCase().includes(firstName.toLowerCase())
+          )
+        );
+      } else if (firstName && filterDistrict) {
+        setDisplayReqs(
+          requests?.filter(
+            (item) =>
+              (item.first_name
+                .toLowerCase()
+                .includes(firstName.toLowerCase()) ||
+                item.last_name
+                  .toLowerCase()
+                  .includes(firstName.toLowerCase())) &&
+              item.district === filterDistrict
+          )
+        );
+      } else if (!firstName && filterDistrict) {
+        setDisplayReqs(
+          requests?.filter((item) => item.district === filterDistrict)
+        );
+      } else {
+        setDisplayReqs(requests);
+      }
     }
-  }, [firstName, filterDistrict]);
+
+    if (role === "district_admin") {
+      if (firstName && filterParish === "") {
+        setDisplayReqs(
+          requests?.filter(
+            (item) =>
+              item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+              item.last_name.toLowerCase().includes(firstName.toLowerCase())
+          )
+        );
+      } else if (firstName && filterParish) {
+        setDisplayReqs(
+          requests?.filter(
+            (item) =>
+              (item.first_name
+                .toLowerCase()
+                .includes(firstName.toLowerCase()) ||
+                item.last_name
+                  .toLowerCase()
+                  .includes(firstName.toLowerCase())) &&
+              item.parish === filterParish
+          )
+        );
+      } else if (!firstName && filterParish) {
+        setDisplayReqs(
+          requests?.filter((item) => item.parish === filterParish)
+        );
+      } else {
+        setDisplayReqs(requests);
+      }
+    }
+  }, [firstName, filterDistrict, filterParish]);
 
   useEffect(() => {
     makeAPIcall();
@@ -102,23 +144,23 @@ export default function ViewAllParishAgentsButton() {
     return;
   };
 
-  useEffect(() => {
-    if (firstName) {
-      setDisplayReqs((prev) => {
-        return prev
-          ? prev?.filter(
-              (item) =>
-                item.first_name
-                  .toLowerCase()
-                  .includes(firstName.toLowerCase()) ||
-                item.last_name.toLowerCase().includes(firstName.toLowerCase())
-            )
-          : null;
-      });
-    } else {
-      setDisplayReqs(requests);
-    }
-  }, [firstName]);
+  // useEffect(() => {
+  //   if (firstName) {
+  //     setDisplayReqs((prev) => {
+  //       return prev
+  //         ? prev?.filter(
+  //             (item) =>
+  //               item.first_name
+  //                 .toLowerCase()
+  //                 .includes(firstName.toLowerCase()) ||
+  //               item.last_name.toLowerCase().includes(firstName.toLowerCase())
+  //           )
+  //         : null;
+  //     });
+  //   } else {
+  //     setDisplayReqs(requests);
+  //   }
+  // }, [firstName]);
 
   useEffect(() => {
     const channels = supabase
@@ -141,7 +183,7 @@ export default function ViewAllParishAgentsButton() {
   return (
     <div>
       <div className="w-full mb-4 md:flex md:flex-row md:mb-4 gap-2">
-      <Input
+        <Input
           id="first_name"
           name="first_name"
           placeholder="Search by name"
@@ -171,7 +213,18 @@ export default function ViewAllParishAgentsButton() {
       </div>
 
       <div className="w-full flex align-middle gap-4 my-2">
-        <FilterByDistrict state={filterDistrict} setState={setFilterDistrict} />
+        {role !== "district_admin" ? (
+          <FilterByDistrict
+            state={filterDistrict}
+            setState={setFilterDistrict}
+          />
+        ) : (
+          <FilterByParish
+            state={filterParish}
+            setState={setFilterParish}
+            district={myDistrict}
+          />
+        )}
         <Button
           className="bg-gray-300 text-black hover:bg-white"
           onClick={clearDistrictFilter}

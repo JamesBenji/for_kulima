@@ -8,6 +8,7 @@ import ViewAllFarmersButton from "../client-rej-by-server/parish_admin/ViewAllFa
 import ViewAllFarmsButton from "../client-rej-by-server/parish_admin/ViewAllFarmsButton";
 import ViewParishAdminsButton from "../client-rej-by-server/district_admin/ViewParishAdminsButton";
 import ViewParishAccessRequestsButton from "../client-rej-by-server/district_admin/ViewParishAccessRequestsButton";
+import StatsDashboard from "../dashboard/Dashboard";
 
 const supabase = createClient();
 
@@ -37,6 +38,10 @@ function VerifiedDistrictAdmin() {
   }, []);
 
   const actions: Actions[] = [
+    {
+      name: "Dashboard",
+      component: <StatsDashboard />,
+    },
     {
       name: "View parish admins",
       component: <ViewParishAdminsButton />,

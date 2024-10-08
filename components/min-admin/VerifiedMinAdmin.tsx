@@ -11,35 +11,15 @@ import ViewParishAccessRequestsButton from "../client-rej-by-server/district_adm
 import ViewDistrictAdminsButton from "../client-rej-by-server/ministry_admin/ViewDistrictAdminsButton";
 import ViewAccessRequestsButton from "../client-rej-by-server/ministry_admin/ViewAccessRequestsButton";
 import ViewAllParishAgentsButton from "../client-rej-by-server/parish_admin/ViewAllParishAgentsButton";
-
-const supabase = createClient();
+import StatsDashboard from "../dashboard/Dashboard";
 
 function VerifiedMinAdmin() {
-  const router = useRouter();
-
-  useEffect(() => {
-    const channels = supabase
-      .channel("custom-update-channel")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "ministry_admin" },
-        (payload) => {
-          console.log("Change received!", payload);
-          if (payload.new.hasAccess === false) {
-            supabase.auth.signOut().then(() => {
-              return router.replace("/");
-            });
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channels);
-    };
-  }, []);
 
   const actions: Actions[] = [
+    {
+      name: "Dashboard",
+      component: <StatsDashboard />,
+    },
     {
       name: "View district admins",
       component: <ViewDistrictAdminsButton />,

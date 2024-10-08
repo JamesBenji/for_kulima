@@ -58,6 +58,7 @@ export default function FarmCard() {
 
     if (farmJSON) {
       setFarm(JSON.parse(farmJSON));
+      console.log({ keys: Object.keys(JSON.parse(farmJSON)) });
     }
   }, []);
   const [isMounted, setIsMounted] = useState(false);

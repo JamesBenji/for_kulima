@@ -1,17 +1,22 @@
 "use client";
 
 import { createClient } from "@/utils/supabase/client";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { RefreshCcw, TableOfContents } from "lucide-react";
+import { Loader2, RefreshCcw, TableOfContents } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getUserAccType } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import FilterByDistrict from "@/components/filter/FilterByDistrict";
+import FilterByParish from "@/components/filter/FilterByParish";
+import useUser from "@/hooks/useUser";
+import { User } from "@supabase/supabase-js";
+interface MyDataProps {
+  district: string;
+}
 
 export default function ViewAllFarmersButton() {
-  
   const supabase = createClient();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -23,8 +28,23 @@ export default function ViewAllFarmersButton() {
   const [firstName, setFirstName] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [filterDistrict, setFilterDistrict] = useState<string>("");
-
+  const [filterParish, setFilterParish] = useState<string>("");
+  const [myData, setMyData] = useState<MyDataProps | null>(null);
   const [role, setRole] = useState<string>("");
+
+  useEffect(() => {
+    supabase
+      .from(
+        `${role === "district_admin" ? "district_admin" : role === "parish_admin" ? "parish_admin" : "field_agents"}`
+      )
+      .select("district")
+      .single().then((response) => {
+        console.log({responseData: response.data});
+        setMyData(response.data)
+      })
+  }, [role]);
+
+  const myDistrict = useMemo(() => myData?.district, [myData]);
 
   useEffect(() => {
     supabase.auth.getUser().then((res) => {
@@ -75,34 +95,69 @@ export default function ViewAllFarmersButton() {
     return;
   };
 
-  
   useEffect(() => {
-    if (firstName && filterDistrict === "") {
-      setDisplayReqs(
-        requests?.filter(
-          (item) =>
-            item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
-            item.last_name.toLowerCase().includes(firstName.toLowerCase())
-        )
-      );
-    } else if (firstName && filterDistrict) {
-      setDisplayReqs(
-        requests?.filter(
-          (item) =>
-            (item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
-              item.last_name.toLowerCase().includes(firstName.toLowerCase())) &&
-            item.district === filterDistrict
-        )
-      );
-    } else if (!firstName && filterDistrict) {
-      setDisplayReqs(
-        requests?.filter((item) => item.district === filterDistrict)
-      );
-    } else {
-      console.log("4th condition");
-      setDisplayReqs(requests);
+    if (role === "ministry_admin") {
+      if (firstName && filterDistrict === "") {
+        setDisplayReqs(
+          requests?.filter(
+            (item) =>
+              item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+              item.last_name.toLowerCase().includes(firstName.toLowerCase())
+          )
+        );
+      } else if (firstName && filterDistrict) {
+        setDisplayReqs(
+          requests?.filter(
+            (item) =>
+              (item.first_name
+                .toLowerCase()
+                .includes(firstName.toLowerCase()) ||
+                item.last_name
+                  .toLowerCase()
+                  .includes(firstName.toLowerCase())) &&
+              item.district === filterDistrict
+          )
+        );
+      } else if (!firstName && filterDistrict) {
+        setDisplayReqs(
+          requests?.filter((item) => item.district === filterDistrict)
+        );
+      } else {
+        setDisplayReqs(requests);
+      }
     }
-  }, [firstName, filterDistrict]);
+
+    if (role === "district_admin") {
+      if (firstName && filterParish === "") {
+        setDisplayReqs(
+          requests?.filter(
+            (item) =>
+              item.first_name.toLowerCase().includes(firstName.toLowerCase()) ||
+              item.last_name.toLowerCase().includes(firstName.toLowerCase())
+          )
+        );
+      } else if (firstName && filterParish) {
+        setDisplayReqs(
+          requests?.filter(
+            (item) =>
+              (item.first_name
+                .toLowerCase()
+                .includes(firstName.toLowerCase()) ||
+                item.last_name
+                  .toLowerCase()
+                  .includes(firstName.toLowerCase())) &&
+              item.parish === filterParish
+          )
+        );
+      } else if (!firstName && filterParish) {
+        setDisplayReqs(
+          requests?.filter((item) => item.parish === filterParish)
+        );
+      } else {
+        setDisplayReqs(requests);
+      }
+    }
+  }, [firstName, filterDistrict, filterParish]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -112,13 +167,24 @@ export default function ViewAllFarmersButton() {
     return null;
   }
 
- 
+  if (!myData) {
+    return (
+      <div className="flex flex-col bg-green-300">
+        <div className="flex flex-col self-center">
+          <div className="flex self-center gap-2">
+            <Loader2 className="animate-spin" />
+            <span>Fetching data...</span>
+          </div>
+          <p>If this takes too long, please reload the page.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="w-full flex flex-col md:flex-row justify-between  mb-3">
         <div className="flex-1 mb-4 md:mb-0 md:pr-5">
-         
           <Input
             id="first_name"
             name="first_name"
@@ -150,7 +216,18 @@ export default function ViewAllFarmersButton() {
       </div>
 
       <div className="w-full flex align-middle gap-4 my-2">
-        <FilterByDistrict state={filterDistrict} setState={setFilterDistrict} />
+        {role !== "district_admin" ? (
+          <FilterByDistrict
+            state={filterDistrict}
+            setState={setFilterDistrict}
+          />
+        ) : (
+          <FilterByParish
+            state={filterParish}
+            setState={setFilterParish}
+            district={myDistrict}
+          />
+        )}
         <Button
           className="bg-gray-300 text-black hover:bg-white"
           onClick={clearDistrictFilter}
@@ -352,6 +429,5 @@ export default function ViewAllFarmersButton() {
           ))}
       </div>
     </div>
-    
   );
 }

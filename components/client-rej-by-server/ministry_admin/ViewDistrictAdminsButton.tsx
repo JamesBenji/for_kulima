@@ -3,7 +3,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createClient } from "@/utils/supabase/client";
-import { RefreshCcw, SlidersHorizontal, TableOfContents } from "lucide-react";
+import { RefreshCcw,  TableOfContents } from "lucide-react";
 import Image from "next/image";
 import RevokeAccessButton from "./RevokeAccessButton";
 import ReGrantAccessButton from "./ReGrantAccessButton";
@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import FilterByDistrict from "@/components/filter/FilterByDistrict";
 
 export default function ViewDistrictAdminsButton() {
-  const supabase = createClient();
+  // const supabase = createClient();
 
   const [isLoading, setIsLoading] = useState(false);
   const [requests, setRequests] = useState<ParishAdminResponse[] | null>(null);
@@ -24,6 +24,7 @@ export default function ViewDistrictAdminsButton() {
   const [firstName, setFirstName] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [filterDistrict, setFilterDistrict] = useState<string>("");
+  
 
   const makeAPIcall = async () => {
     setIsLoading(true);
@@ -57,23 +58,23 @@ export default function ViewDistrictAdminsButton() {
     makeAPIcall();
   }, []);
 
-  useEffect(() => {
-    const channels = supabase
-      .channel("custom-all-channel")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "parish_admin" },
-        (payload) => {
-          console.log("Change received!", payload);
-          makeAPIcall();
-        }
-      )
-      .subscribe();
+  // useEffect(() => {
+  //   const channels = supabase
+  //     .channel("custom-all-channel")
+  //     .on(
+  //       "postgres_changes",
+  //       { event: "*", schema: "public", table: "parish_admin" },
+  //       (payload) => {
+  //         console.log("Change received!", payload);
+  //         makeAPIcall();
+  //       }
+  //     )
+  //     .subscribe();
 
-    return () => {
-      supabase.removeChannel(channels);
-    };
-  }, []);
+  //   return () => {
+  //     supabase.removeChannel(channels);
+  //   };
+  // }, []);
 
   const router = useRouter();
 

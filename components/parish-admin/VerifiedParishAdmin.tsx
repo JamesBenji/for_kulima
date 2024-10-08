@@ -8,6 +8,7 @@ import ViewAgentAccessRequestsButton from "../client-rej-by-server/parish_admin/
 import Dashboard from "@/components/protected_dashboard/dashboard";
 import ViewAllFarmersButton from "../client-rej-by-server/parish_admin/ViewAllFarmersButton";
 import ViewAllFarmsButton from "../client-rej-by-server/parish_admin/ViewAllFarmsButton";
+import StatsDashboard from "../dashboard/Dashboard";
 
 const supabase = createClient();
 
@@ -37,6 +38,10 @@ function VerifiedParishAdmin() {
   }, []);
 
   const actions: Actions[] = [
+    {
+      name: "Dashboard",
+      component: <StatsDashboard />,
+    },
     {
       name: "View your field agents",
       component: <ViewAllParishAgentsButton />,

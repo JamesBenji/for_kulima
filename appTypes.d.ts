@@ -126,3 +126,12 @@ type ApplicantFields = {
   image: File | null;
 };
 
+interface TrendsObject {
+  id: number;
+  created_at: string | Date | number;
+  farms: number;
+  farmers: number;
+  district_admins: number;
+  parish_admins: number;
+  field_agents: number;
+}
