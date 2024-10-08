@@ -112,7 +112,7 @@ export default function InfoCard({
       displayValue = district_admins;
   }
 
-  const [responses, setResponses] = useState<Responses | null>(null);
+  const [responses, setResponses] = useState< { [key: string]: number } | null>(null);
 
   useEffect(() => {
     if (role === "district_admin") {
@@ -205,7 +205,7 @@ export default function InfoCard({
 
         console.log({ responses });
 
-        setResponses(responses); //ignore error
+        setResponses(responses);
       };
 
       fetchParishData();
