@@ -126,7 +126,7 @@ export default function StatsDashboard() {
         </span>
 
         {myDistrict && (
-          <div className="flex flex-1 flex-wrap justify-evenly">
+          <div className="flex flex-1 flex-wrap justify-evenly align-middle">
             <InfoCard
               data={trends}
               role={role}
@@ -169,7 +169,7 @@ export default function StatsDashboard() {
         </span>
 
         {myDistrict && myParish && (
-          <div className="flex flex-1 flex-wrap justify-evenly">
+          <div className="flex flex-1 flex-wrap justify-evenly align-middle">
             <InfoCard
               data={trends}
               role={role}
@@ -215,7 +215,7 @@ export default function StatsDashboard() {
           Overview
         </span>
 
-        <div className="flex flex-1 flex-wrap">
+        <div className="flex flex-1 flex-wrap justify-center align-middle">
           <InfoCard data={trends} role={role} item="district_admins" />
           <InfoCard data={trends} role={role} item="parish_admins" />
           <InfoCard data={trends} role={role} item="field_agents" />
