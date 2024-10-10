@@ -37,7 +37,8 @@ export default function StatsDashboard() {
   //   setting user role
   useEffect(() => {
     supabase.auth.getUser().then((response) => {
-      if (response.error) toast.error("User fetch error");
+      if (response.error)
+        toast.error("User fetch error. Your internet connection is slow.");
 
       const email = response.data.user?.email;
       setEmail(email);
@@ -157,6 +158,52 @@ export default function StatsDashboard() {
             />
           </div>
         )}
+
+        {myDistrict && (
+          <div className="flex flex-1 flex-wrap align-middle justify-center">
+            <div className="">
+              <GraphCard
+                data={trends}
+                y_axis="farms"
+                width={card_width}
+                height={card_height}
+                role={role}
+                district={myDistrict}
+              />
+            </div>
+            <div>
+              <GraphCard
+                data={trends}
+                y_axis="farmers"
+                width={card_width}
+                height={card_height}
+                role={role}
+                district={myDistrict}
+              />
+            </div>
+
+            <div>
+              <GraphCard
+                data={trends}
+                y_axis="parish_admins"
+                width={card_width}
+                height={card_height}
+                role={role}
+                district={myDistrict}
+              />
+            </div>
+            <div>
+              <GraphCard
+                data={trends}
+                y_axis="field_agents"
+                width={card_width}
+                height={card_height}
+                role={role}
+                district={myDistrict}
+              />
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -194,6 +241,45 @@ export default function StatsDashboard() {
               district={myDistrict}
               parish={myParish}
             />
+          </div>
+        )}
+
+        {myDistrict && myParish && (
+          <div className="flex flex-1 flex-wrap align-middle justify-center">
+            <div className="">
+              <GraphCard
+                data={trends}
+                y_axis="farms"
+                width={card_width}
+                height={card_height}
+                role={role}
+                district={myDistrict}
+                parish={myParish}
+              />
+            </div>
+            <div>
+              <GraphCard
+                data={trends}
+                y_axis="farmers"
+                width={card_width}
+                height={card_height}
+                role={role}
+                district={myDistrict}
+                parish={myParish}
+              />
+            </div>
+
+            <div>
+              <GraphCard
+                data={trends}
+                y_axis="field_agents"
+                width={card_width}
+                height={card_height}
+                role={role}
+                district={myDistrict}
+                parish={myParish}
+              />
+            </div>
           </div>
         )}
       </div>

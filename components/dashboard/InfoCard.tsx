@@ -112,7 +112,9 @@ export default function InfoCard({
       displayValue = district_admins;
   }
 
-  const [responses, setResponses] = useState< { [key: string]: number } | null>(null);
+  const [responses, setResponses] = useState<{ [key: string]: number } | null>(
+    null
+  );
 
   useEffect(() => {
     if (role === "district_admin") {
@@ -160,7 +162,6 @@ export default function InfoCard({
         // district_count_farmers = Farmers?.length!;
         responses["farmers"] = Farmers?.length!;
 
-        console.log({ responses });
 
         setResponses(responses); //ignore error
       };
@@ -202,8 +203,6 @@ export default function InfoCard({
 
         // district_count_farmers = Farmers?.length!;
         responses["farmers"] = Farmers?.length!;
-
-        console.log({ responses });
 
         setResponses(responses);
       };
