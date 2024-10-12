@@ -363,7 +363,7 @@ export default function FarmCard() {
                           routeToMap(farm.geo_location);
                           setMapBtnClicked(true)
                         }}
-                        className="my-2"
+                        className="my-2 w-full"
                       >
                         {mapBtnClicked ? 'Opening map' : 'See on map'}
                       </Button>

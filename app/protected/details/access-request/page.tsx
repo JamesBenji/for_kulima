@@ -6,8 +6,8 @@ import GrantAgentAccessButton from "@/components/client-rej-by-server/parish_adm
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+// import Image from "next/image";
+// import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { LinearGradient } from "react-text-gradients";
@@ -93,7 +93,7 @@ const generateColumnArrays = (arr: string[]) => {
 
 export default function AdministratorDetailsView() {
   const supabase = createClient();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [currentDetailsJSON, setCurrentDetailsJSON] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const [role, setRole] = useState<string | null>(null);
@@ -155,7 +155,7 @@ export default function AdministratorDetailsView() {
       {/* body */}
       <Card className="md:mx-auto w-full overflow-hidden flex flex-col align-middle justify-center">
         <CardHeader>
-          <CardTitle className="md:min-w-prose w-full mx-auto rounded-lg shadow-md shadow-gray-300 border-[1px] border-gray-300 bg-gray-100 px-4 py-2">
+          <CardTitle className="md:min-w-prose w-full mx-auto rounded-lg shadow-md light:shadow-gray-300 border-[1px] border-gray-300 bg-gray-100 px-4 py-2">
             {/* image name sys_role */}
             <div className="flex flex-row align-middle justify-between rounded-lg overflow-hidden object-contain md:gap-4">
               <div className="w-[200px] h-[200px] object-fill rounded-lg overflow-hidden text-xs text-gray-300">
@@ -166,7 +166,7 @@ export default function AdministratorDetailsView() {
                   width={200}
                 />
               </div>
-              <div className="my-auto px-5">
+              <div className="my-auto px-5 dark:text-gray-900">
                 {/* name and sys_role */}
                 <p className="font-semibold text-xl tracking-wide">{`${currentRequest.first_name} ${currentRequest.last_name}`}</p>
                 <span className="text-sm font-normal tracking-normal text-black/60">

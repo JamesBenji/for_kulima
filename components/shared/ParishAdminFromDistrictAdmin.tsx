@@ -167,7 +167,7 @@ export default function ParishAdminFromDistrictAdmin({
               {/* body */}
               <Card className="md:mx-auto w-full overflow-hidden flex flex-col align-middle justify-center">
                 <CardHeader>
-                  <CardTitle className="md:min-w-prose w-full mx-auto rounded-lg shadow-md shadow-gray-300 border-[1px] border-gray-300 bg-gray-100 px-4 py-2">
+                  <CardTitle className="md:min-w-prose w-full mx-auto rounded-lg shadow-md light:shadow-gray-300 border-[1px] border-gray-300 bg-gray-100 px-4 py-2">
                     {/* image name sys_role */}
                     <div className="flex flex-row align-middle justify-between rounded-lg overflow-hidden object-contain md:gap-4">
                       <div className="w-[80px] h-[80px] object-contain rounded-lg overflow-hidden">
@@ -180,7 +180,7 @@ export default function ParishAdminFromDistrictAdmin({
                           quality={80} // Adjust quality for smaller devices
                         />
                       </div>
-                      <div className="my-auto px-5">
+                      <div className="my-auto px-5 dark:text-gray-900">
                         {/* name and sys_role */}
                         <p className="font-semibold text-xl tracking-wide">{`${currentDetails.first_name} ${currentDetails.last_name}`}</p>
                         <span className="text-sm font-normal tracking-normal text-black/60">
