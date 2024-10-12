@@ -23,7 +23,7 @@ export default function StatsDashboard() {
     undefined
   );
   const [email, setEmail] = useState<string | undefined>("");
-  const { width = 0, height = 0 } = useWindowSize();
+  const { width = 0 } = useWindowSize();
   const divWidth = useMemo(() => 0.75 * width, []);
   const card_width: number = useMemo(() => {
     if (width < MOBILE_BREAKPOINT) return 300;

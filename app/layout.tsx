@@ -13,7 +13,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Home | Kulima",
+  title: "Kulima",
   description: "Welcome to Kulima",
 };
 

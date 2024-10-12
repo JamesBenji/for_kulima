@@ -1,13 +1,13 @@
 "use client";
 
-import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+// import { createClient } from "@/utils/supabase/client";
+// import { useRouter } from "next/navigation";
+import React from "react";
 import Dashboard from "@/components/protected_dashboard/dashboard";
 import ViewAllFarmersButton from "../client-rej-by-server/parish_admin/ViewAllFarmersButton";
 import ViewAllFarmsButton from "../client-rej-by-server/parish_admin/ViewAllFarmsButton";
 import ViewParishAdminsButton from "../client-rej-by-server/district_admin/ViewParishAdminsButton";
-import ViewParishAccessRequestsButton from "../client-rej-by-server/district_admin/ViewParishAccessRequestsButton";
+// import ViewParishAccessRequestsButton from "../client-rej-by-server/district_admin/ViewParishAccessRequestsButton";
 import ViewDistrictAdminsButton from "../client-rej-by-server/ministry_admin/ViewDistrictAdminsButton";
 import ViewAccessRequestsButton from "../client-rej-by-server/ministry_admin/ViewAccessRequestsButton";
 import ViewAllParishAgentsButton from "../client-rej-by-server/parish_admin/ViewAllParishAgentsButton";

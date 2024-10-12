@@ -167,19 +167,6 @@ export default function ViewAllFarmersButton() {
     return null;
   }
 
-  if (!myData) {
-    return (
-      <div className="flex flex-col bg-green-300">
-        <div className="flex flex-col self-center">
-          <div className="flex self-center gap-2">
-            <Loader2 className="animate-spin" />
-            <span>Fetching data...</span>
-          </div>
-          <p>If this takes too long, please reload the page.</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div>

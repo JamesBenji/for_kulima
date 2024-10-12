@@ -1,6 +1,8 @@
 "use client";
+import { useAppTheme } from "@/utils/global_state/Store";
 import { createClient } from "@/utils/supabase/client";
 import { Loader2 } from "lucide-react";
+import { useTheme } from "next-themes";
 import React, { useEffect, useState } from "react";
 import {
   Area,
@@ -73,6 +75,7 @@ export default function GraphCard({
   const [parishResponses, setParishResponses] = useState<{
     [key: string]: Array<{ created_at: string }>;
   } | null>(null);
+  const appTheme = useAppTheme((state) => state.theme);
 
   const XAxisDataKey = "created_at";
   let YAxisDataKey: string;
@@ -237,7 +240,7 @@ export default function GraphCard({
       );
     }
     return (
-      <div className="my-2 md:m-1 border-[1px] border-gray-400 shadow-md shadow-gray-300 rounded-lg pr-5 ">
+      <div className="my-2 md:m-1 border-[1px] border-gray-400 shadow-md shadow-gray-300 rounded-lg pr-5">
         <p className="text-center font-semibold my-2">{displayTitle}</p>
         <AreaChart
           width={width - 10}
@@ -260,7 +263,9 @@ export default function GraphCard({
           />
           <XAxis dataKey={"label"} tick={false} />
           <YAxis domain={[0, "auto"]} />
-          <Tooltip />
+          <Tooltip contentStyle={{
+          background: appTheme === 'dark' ? '#333' : '#fff'
+        }} />
         </AreaChart>
       </div>
     );
@@ -300,7 +305,9 @@ export default function GraphCard({
           />
           <XAxis dataKey={"label"} tick={false} />
           <YAxis domain={[0, "auto"]} />
-          <Tooltip />
+          <Tooltip contentStyle={{
+          background: appTheme === 'dark' ? '#333' : '#fff'
+        }} />
         </AreaChart>
       </div>
     );
@@ -353,7 +360,9 @@ export default function GraphCard({
         />
         <XAxis dataKey={XAxisDataKey} tick={false} />
         <YAxis />
-        <Tooltip />
+        <Tooltip contentStyle={{
+          background: appTheme === 'dark' ? '#333' : '#fff'
+        }} />
       </AreaChart>
     </div>
   );
