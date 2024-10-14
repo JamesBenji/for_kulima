@@ -96,7 +96,7 @@ export default function ViewAllFarmersButton() {
   };
 
   useEffect(() => {
-    if (role === "ministry_admin") {
+    if (role !== "district_admin" && role !== 'parish_admin') {
       if (firstName && filterDistrict === "") {
         setDisplayReqs(
           requests?.filter(
@@ -153,10 +153,11 @@ export default function ViewAllFarmersButton() {
         setDisplayReqs(
           requests?.filter((item) => item.parish === filterParish)
         );
-      } else {
+      } else {        
         setDisplayReqs(requests);
       }
     }
+
   }, [firstName, filterDistrict, filterParish]);
 
   useEffect(() => {
