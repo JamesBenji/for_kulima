@@ -111,6 +111,24 @@ type ParishAdminResponse = {
   sys_role?: string;
 };
 
+type AdminType = {
+  created_at: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone_number: string[];
+  organization: string;
+  position: string;
+  gender: string;
+  allocation: string;
+  granted_by: string;
+  district: string;
+  parish: string;
+  hasAccess: boolean;
+  image: string;
+  sys_role?: string;
+};
+
 type ApplicantFields = {
   first_name: string;
   last_name: string;

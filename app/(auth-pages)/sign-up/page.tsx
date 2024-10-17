@@ -1,3 +1,4 @@
+"use client";
 import { signUpAction } from "@/app/actions";
 import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
@@ -6,7 +7,13 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { LinearGradient } from "react-text-gradients";
 
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+
 export default function Signup({ searchParams }: { searchParams: Message }) {
+  const [showPassword, setShowPassword] = useState(false);
+
   if ("message" in searchParams || "error" in searchParams) {
     return (
       <div className="mx-auto w-full flex-1 flex items-center h-screen sm:max-w-md justify-center gap-2 p-4">
@@ -41,14 +48,29 @@ export default function Signup({ searchParams }: { searchParams: Message }) {
               <Label htmlFor="email">Email</Label>
               <Input name="email" placeholder="you@example.com" required />
               <Label htmlFor="password">Password</Label>
-              <Input
-                type="password"
-                name="password"
-                placeholder="Your password"
-                minLength={6}
-                required
-              />
 
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Your password (at least 6 characters)"
+                  minLength={6}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
               <SubmitButton
                 formAction={signUpAction}
                 pendingText="Signing up..."

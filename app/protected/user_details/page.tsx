@@ -21,9 +21,10 @@ async function ApplicantDetails() {
             {applicant.requested_position === "district_admin"
               ? "district administrator"
               : "parish administrator"}
-            . Please wait for your account to be activated upon review. If the
-            account is not activated within 7 days from application, please
-            contact the{" "}
+            . Please wait for your account to be activated upon review. After a
+            successful review, a confirmation email will be sent to this email
+            address {user?.email}. If the account is not activated within 7 days
+            from application, please contact the{" "}
             {applicant.requested_position === "district_admin"
               ? "Head of this project at the Ministry of ..."
               : "District administrator for your district."}
@@ -32,12 +33,6 @@ async function ApplicantDetails() {
       </div>
     );
   }
-
-  /**
-   * upload client image
-   * send formData to server /register-access-request
-   *
-   */
 
   return <ApplicantForm />;
 }

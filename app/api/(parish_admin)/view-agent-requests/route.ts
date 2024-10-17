@@ -7,17 +7,17 @@ export async function GET() {
   try {
     const supabase = createClient();
 
-    const mayBeDistrictAdminEmail = (await supabase.auth.getUser()).data.user?.email;
+    const mayBe_admin_email = (await supabase.auth.getUser()).data.user?.email;
 
-    if (mayBeDistrictAdminEmail) {
+    if (mayBe_admin_email) {
       // checking if request has admin rights
-      const isAdmin = await isParishAdmin(mayBeDistrictAdminEmail, supabase);
+      const isAdmin = await isParishAdmin(mayBe_admin_email, supabase);
 
       if (!isAdmin.isParishAdmin) {
         throw new Error("You are not authorized to execute this operation.");
       }
 
-      const accessRequests = await viewAgentAccessRequests(supabase)
+      const accessRequests = await viewAgentAccessRequests(supabase, mayBe_admin_email)
 
       return NextResponse.json({
         accessRequests,

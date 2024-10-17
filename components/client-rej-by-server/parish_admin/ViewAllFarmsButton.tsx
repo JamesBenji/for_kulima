@@ -30,9 +30,11 @@ export default function ViewAllFarmsButton() {
       }
     });
   }, []);
+
   const clearDistrictFilter = () => {
     setFilterDistrict("");
   };
+
   const router = useRouter();
 
   const routeToMaps = (coordinates: Coordinates) => {
@@ -180,7 +182,7 @@ export default function ViewAllFarmsButton() {
                       {request?.farm_name}
                     </h1>
                     <h2 className="font-light text-sm">
-                      {request?.location || "Disrict, Parish, Village"}
+                      {request?.location || "District, Parish, Village"}
                     </h2>
                   </div>
                   {/* Review button */}
@@ -207,7 +209,7 @@ export default function ViewAllFarmsButton() {
                 {/* review section */}
               </div>
               <div>
-                {review === `${request?.image_file_name}` && (
+                {/* {review === `${request?.image_file_name}` && (
                   <div className="flex flex-col md:flex-row px-3 border rounded-md animate-accordion-down animate-in">
                     <div className="flex basis-1/3">
                       {request?.images?.length > 0 && (
@@ -445,7 +447,7 @@ export default function ViewAllFarmsButton() {
                       )}
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           ))}

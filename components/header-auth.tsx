@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "./ui/button";
 import { LinearGradient } from "react-text-gradients";
-import Link from "next/link";
 import { signOutAction } from "@/app/actions";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
@@ -52,7 +51,7 @@ export default function AuthButton() {
         variant="outline"
         className="bg-gradient-to-tr to-[#17acff] from-[#00ff00] text-white"
       >
-        <Link href={`/sign-in`}>Sign in</Link>
+        <a href={`/sign-in`}>Sign in</a>
       </Button>
       <Button
         asChild
@@ -60,7 +59,7 @@ export default function AuthButton() {
         variant="default"
         className="bg-white text-black light:hover:bg-black/5 hover:text-white dark:hover:text-black"
       >
-        <Link href={`/sign-up`}>Sign up</Link>
+        <a href={`/sign-up`}>Sign up</a>
       </Button>
     </div>
   );

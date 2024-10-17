@@ -14,7 +14,6 @@ export default function ViewAgentAccessRequestsButton() {
   const [requests, setRequests] = useState<AccountApplicationData[] | null>(
     null
   );
-  // const [error, setError] = useState<string | null>(null);
   const [review, setReview] = useState<string | null>(null);
 
   const toggleReviewSection = (id: string) => {
@@ -40,11 +39,7 @@ export default function ViewAgentAccessRequestsButton() {
 
       if (!parsedRequests.error) {
         setRequests(parsedRequests.accessRequests.accessRequests);
-        // if (error) setError(null);
       }
-      // else {
-      //   setError(parsedRequests.error);
-      // }
     } finally {
       setIsLoading(false);
     }
@@ -54,23 +49,23 @@ export default function ViewAgentAccessRequestsButton() {
     makeAPIcall();
   }, []);
 
-  useEffect(() => {
-    const channels = supabase
-      .channel("custom-all-channel")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "agent_account_requests" },
-        (payload) => {
-          console.log("Change received!", payload);
-          makeAPIcall();
-        }
-      )
-      .subscribe();
+  // useEffect(() => {
+  //   const channels = supabase
+  //     .channel("custom-all-channel")
+  //     .on(
+  //       "postgres_changes",
+  //       { event: "*", schema: "public", table: "agent_account_requests" },
+  //       (payload) => {
+  //         console.log("Change received!", payload);
+  //         makeAPIcall();
+  //       }
+  //     )
+  //     .subscribe();
 
-    return () => {
-      supabase.removeChannel(channels);
-    };
-  }, []);
+  //   return () => {
+  //     supabase.removeChannel(channels);
+  //   };
+  // }, []);
 
   return (
     <div>
@@ -110,7 +105,7 @@ export default function ViewAgentAccessRequestsButton() {
           <div key={request.requestor_email}>
             <div className="block md:flex md:flex-row md:justify-around border-2 rounded-md p-2">
               <div className="flex w-[50px] h-[50px] rounded-full overflow-hidden object-contain mr-5">
-                {request.image && (
+                {request?.image && (
                   <Image
                     src={request.image}
                     alt="Field agent image"
@@ -124,10 +119,10 @@ export default function ViewAgentAccessRequestsButton() {
                 {/* requestor name and requested position */}
                 <div className="flex-1 py-1 px-2">
                   <h1 className="font-semibold tracking-wide text-lg">
-                    {request.first_name} {request.last_name}
+                    {request?.first_name} {request?.last_name}
                   </h1>
                   <h2 className="font-light text-sm">
-                    {request.allocation || "Disrict, Parish, Village"}
+                    {request?.allocation || "District, Parish, Village"}
                   </h2>
                 </div>
                 {/* Review button */}
@@ -149,7 +144,7 @@ export default function ViewAgentAccessRequestsButton() {
               {review === request.requestor_email && (
                 <div className="flex flex-col md:flex-row md:px-3 border rounded-md animate-accordion-down md:py-2">
                   <div className="hidden md:flex basis-1/3 p-5">
-                    {request.image && (
+                    {request?.image && (
                       <Image
                         src={request.image}
                         alt="Field agent image"
@@ -165,7 +160,7 @@ export default function ViewAgentAccessRequestsButton() {
                         Name:&nbsp;
                       </span>
                       <span>
-                        {request.first_name} {request.last_name}
+                        {request?.first_name} {request?.last_name}
                       </span>
                     </p>
                     <p className="flex flex-row justify-between align-middle py-1">
@@ -173,29 +168,29 @@ export default function ViewAgentAccessRequestsButton() {
                       <span className="font-semibold text-lg tracking-wide">
                         Email:&nbsp;
                       </span>
-                      {request.requestor_email}
+                      {request?.requestor_email}
                     </p>
                     <p className="flex flex-row justify-between align-middle py-1">
                       <span className="font-semibold text-lg tracking-wide">
                         Gender:&nbsp;
                       </span>
-                      {request.gender}
+                      {request?.gender}
                     </p>
                     <p className="flex flex-row justify-between align-middle py-1">
                       <span className="font-semibold text-lg tracking-wide">
                         Organization:&nbsp;
                       </span>
-                      {request.organization}
+                      {request?.organization}
                     </p>
                     <p className="flex flex-row justify-between align-middle py-1">
                       {" "}
                       <span className="font-semibold text-lg tracking-wide">
                         Phone number{"(s)"}:
                       </span>
-                      {request.phone_number.length === 1 ? (
-                        <span>{request.phone_number[0]} </span>
+                      {request?.phone_number.length === 1 ? (
+                        <span>{request?.phone_number[0]} </span>
                       ) : (
-                        request.phone_number.map((tel) => (
+                        request?.phone_number.map((tel) => (
                           <>
                             <span key={tel}>{tel} </span> <br />
                           </>
@@ -206,9 +201,9 @@ export default function ViewAgentAccessRequestsButton() {
                       <span className="font-semibold text-lg tracking-wide">
                         Requests access as:{" "}
                       </span>{" "}
-                      {request.requested_position === "district_admin"
+                      {request?.requested_position === "district_admin"
                         ? "District administrator"
-                        : request.requested_position === "parish_admin"
+                        : request?.requested_position === "parish_admin"
                           ? "Parish administrator"
                           : "Field agent"}
                     </p>
@@ -216,7 +211,7 @@ export default function ViewAgentAccessRequestsButton() {
                       <span className="font-semibold text-lg tracking-wide">
                         Allocation:{" "}
                       </span>
-                      {request.allocation}
+                      {`${request?.district} district, ${request?.parish} parish${request?.allocation ? `, ${request?.allocation}` : ""}`}
                     </p>
                     <div>
                       <GrantAgentAccessButton

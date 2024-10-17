@@ -3,10 +3,10 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { getUserAccType } from "../actions";
 import VerifiedMinAdmin from "@/components/min-admin/VerifiedMinAdmin";
+import { useAdminDetails } from "@/utils/global_state/Store";
 
 export default async function ProtectedPage() {
   const supabase = createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -17,9 +17,7 @@ export default async function ProtectedPage() {
 
   const is_min_admin = await isMinAdmin(user?.email!, supabase);
 
-  const userAccType = await getUserAccType(user.email!);
-  // console.log({userAccType, is_min_admin});
-  
+  const userAccType = await getUserAccType(user.email!);  
 
   if (is_min_admin?.isMinAdmin === false || is_min_admin.error?.code === 'PGRST116') {
     if (!userAccType) {
@@ -47,32 +45,5 @@ export default async function ProtectedPage() {
     <div className="flex-1 h-full flex flex-col">
       <VerifiedMinAdmin />
     </div>
-    // <div className="flex-1 w-full flex flex-col gap-12">
-    //   <div className="w-full">
-    //     {/* <div className="bg-accent text-sm p-3 px-5 rounded-md text-foreground flex gap-3 items-center">
-    //       <InfoIcon size="16" strokeWidth={2} />
-    //       This is a protected page that you can only see as an authenticated
-    //       user
-    //     </div> */}
-    //   </div>
-
-    //   <GrantAccessButton />
-
-    //   <ViewAccessRequestsButton />
-
-    //   <RevokeAccessButton />
-
-    //   <ReGrantAccessButton />
-
-    //   <ViewDistrictAdminsButton />
-
-    //   <ViewSingleDistrictAdminButton />
-
-    //   <ViewParishAdminsButton />
-
-    //   <SearchUserButton />
-
-    //   <ViewFieldAgentsButton />
-    // </div>
   );
 }

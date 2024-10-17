@@ -20,12 +20,22 @@ import { Menu } from "lucide-react";
  * @returns UI
  */
 
+interface AdminLocation {
+  district: string | null | undefined;
+  parish: string | null | undefined;
+  allocation: string | null | undefined;
+}
 interface DashboardProps {
   actions: Actions[];
   title: string;
+  location?: AdminLocation;
 }
 
-export default function Dashboard({ actions, title }: DashboardProps) {
+export default function Dashboard({
+  actions,
+  title,
+  location,
+}: DashboardProps) {
   const [displayAction, setDisplayAction] = useState<string>("");
 
   useEffect(() => {
@@ -38,27 +48,27 @@ export default function Dashboard({ actions, title }: DashboardProps) {
     <div className="flex-1 h-full flex flex-col">
       <div className=" flex-1 flex flex-col md:flex-row w-full border-t-2">
         <div className="md:hidden">
-        <Sheet>
-          <SheetTrigger className="p-3 self-end">
-            <Menu />
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Actions</SheetTitle>
-              <SheetDescription></SheetDescription>
-            </SheetHeader>
-            <ActionsPane titleRemoved={true}>
-              {actions.map((action) => (
-                <Action
-                  key={action.name}
-                  name={action.name}
-                  actionFunction={setDisplayAction}
-                  displayAction={displayAction}
-                />
-              ))}
-            </ActionsPane>
-          </SheetContent>
-        </Sheet>
+          <Sheet>
+            <SheetTrigger className="p-3 self-end">
+              <Menu />
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Actions</SheetTitle>
+                <SheetDescription></SheetDescription>
+              </SheetHeader>
+              <ActionsPane titleRemoved={true}>
+                {actions.map((action) => (
+                  <Action
+                    key={action.name}
+                    name={action.name}
+                    actionFunction={setDisplayAction}
+                    displayAction={displayAction}
+                  />
+                ))}
+              </ActionsPane>
+            </SheetContent>
+          </Sheet>
         </div>
 
         <ActionsPane hidden={true}>
@@ -72,7 +82,7 @@ export default function Dashboard({ actions, title }: DashboardProps) {
           ))}
         </ActionsPane>
 
-        <DashboardPane title={title}>
+        <DashboardPane title={title} location={location}>
           {actions.find((action) => action.name === displayAction)
             ?.component || <div></div>}
         </DashboardPane>

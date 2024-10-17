@@ -17,15 +17,28 @@ export async function isParishAdmin(
 
 // view access requests
 export async function viewAgentAccessRequests(
-  supabase: SupabaseClient<any, "public", any>
+  supabase: SupabaseClient<any, "public", any>,
+  email: string
 ) {
-  // add my email later
+  // get my district and parish
+  const { data: myLocation, error: myLocationError } = await supabase
+    .from("parish_admin")
+    .select("district, parish")
+    .eq("email", email)
+    .single();
+  if (myLocationError) {
+    console.log({ myLocationError });
+    return;
+  }
+
   const { data: accessRequests, error } = await supabase
     .from("field_agent_account_requests")
     .select(
-      "created_at, image,requestor_email, requested_position, first_name, last_name, phone_number, organization, position, gender, granted_as"
+      "created_at, image, requestor_email, requested_position, first_name, last_name, phone_number, organization, position, gender, granted_as, district, parish, allocation"
     )
-    .eq("granted_as", "null");
+    .eq("granted_as", "null")
+    .eq("district", myLocation.district)
+    .eq("parish", myLocation.parish);
 
   if (error) return { error };
 
@@ -100,28 +113,29 @@ export async function viewAllParishAgents(
   return { allParishAgents };
 }
 
-
 export async function viewSingleParishAgent(
   supabase: SupabaseClient<any, "public", any>,
   email: string
-){
+) {
   const { data: parishAgent, error } = await supabase
     .from("field_agents")
     .select(
       "created_at, email, first_name, last_name, phone_number, organization, position, gender, allocation, granted_by, hasAccess"
-    ).eq('email', email)
+    )
+    .eq("email", email);
   if (error) return { error };
   return { parishAgent };
 }
 export async function viewSingleParishAgentByFName(
   supabase: SupabaseClient<any, "public", any>,
   name: string
-){
+) {
   const { data: parishAgent, error } = await supabase
     .from("field_agents")
     .select(
       "created_at, email, first_name, last_name, phone_number, organization, position, gender, allocation, granted_by, hasAccess"
-    ).eq('first_name', name)
+    )
+    .eq("first_name", name);
   if (error) return { error };
   return { parishAgent };
 }
