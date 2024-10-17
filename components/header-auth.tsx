@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { LinearGradient } from "react-text-gradients";
 import { signOutAction } from "@/app/actions";
 import { createClient } from "@/utils/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Session } from "@supabase/supabase-js";
 import { usePathname } from "next/navigation";
 
@@ -14,22 +14,25 @@ import { usePathname } from "next/navigation";
 export default function AuthButton() {
   // const supabase = createClient()
   const supabase = createClient();
-  const [sessionData, setSession] = useState<Session | null>(null)
-  const pathname = usePathname()
+  const [sessionData, setSession] = useState<Session | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const pathname = useMemo(() => usePathname(), []);
 
   useEffect(() => {
-    supabase.auth.getSession().then(response => {
-      if(response.error){
-        setSession(null)
+    supabase.auth.getSession().then((response) => {
+      if (response.error) {
+        setSession(null);
         return;
       }
-      setSession(response.data.session)
-    })
-  }, [])
+      setSession(response.data.session);
+    });
+  }, []);
 
-  const email = sessionData?.user.email;
-  
-  return sessionData && pathname.includes('/protected') ? (
+  useEffect(() => {
+    if (sessionData?.user.email) setEmail(sessionData?.user.email);
+  }, [sessionData]);
+
+  return email && pathname.includes("/protected") ? (
     <div className="flex items-center md:gap-4 mr-2">
       <span className="hidden md:block">
         <LinearGradient gradient={["to left", "#17acff ,#17acff ,#00ff00"]}>
