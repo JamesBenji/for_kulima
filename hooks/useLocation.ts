@@ -1,14 +1,7 @@
 "use client";
 import { createClient } from "@/utils/supabase/client";
-import { SupabaseClient, UserResponse } from "@supabase/supabase-js";
-import { error } from "console";
+import { SupabaseClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-
-type Location = {
-  district: string;
-  parish: string;
-};
 
 const fetchDistricts = async (supabase: SupabaseClient<any, "public", any>) => {
   const { data, error } = await supabase
@@ -25,18 +18,19 @@ const fetchDistricts = async (supabase: SupabaseClient<any, "public", any>) => {
 
 const useLocation = () => {
   const supabase = createClient();
+  
   const [locations, setLocations] = useState<
     { district: string; sub_county: string }[] | null
   >(null);
 
-  const [tracker, setTracker] = useState<boolean>(false);
+  const [locationsLoaded, setLocationsLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    setTracker(locations ? true : false);
+    setLocationsLoaded(locations ? true : false);
   }, [locations]);
 
   useEffect(() => {
-    if (!tracker) {
+    if (!locationsLoaded) {
       fetchDistricts(supabase).then((response) => {
         if (response) {
           setLocations(response);

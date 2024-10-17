@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Link, Loader2 } from "lucide-react";
 import { LinearGradient } from "react-text-gradients";
 import Image from "next/image";
+import { DownloadFarmerReport } from "@/lib/shared/functions";
+import toast from "react-hot-toast";
 
 const getKeys = (obj: any) => {
   if (obj) return typeof obj === "object" ? Object.keys(obj) : [];
@@ -99,7 +101,9 @@ export default function FarmerCard() {
     }
   }, []);
   const [isMounted, setIsMounted] = useState(false);
+  const [clicked, setClicked] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
 
   const keys = useMemo(() => getKeys(farms), [farms]);
   const otherKeys = useMemo(
@@ -114,6 +118,20 @@ export default function FarmerCard() {
     () => generateColumnArrays(otherKeys),
     [otherKeys]
   );
+
+  const handleReportDownload = async () => {
+    setClicked(true)
+    const response = await DownloadFarmerReport(farms?.farmer_uid);
+    if (response.error) {
+      toast.error("Download failed", { duration: 3000 });
+      setClicked(false)
+      return;
+    }
+
+    toast.success("Data downloaded");
+    setClicked(false)
+    return;
+  };
 
   useEffect(() => {
     // Set the mounted state to true once the component is mounted
@@ -247,21 +265,6 @@ export default function FarmerCard() {
                     </p>
                   </div>
 
-                  {/* <div>
-                    {farms?.tel?.length > 0 && farms?.tel?.map((tel: any) => (
-                      <div>
-                        <div>
-                          <p className="text-xs text-gray-500">
-                            {formattedKey("Telephone")}
-                          </p>
-                        </div>
-
-                        <div>
-                          <p>{formattedValue(tel, "tel")}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div> */}
                 </div>
               </div>
             }
@@ -274,6 +277,15 @@ export default function FarmerCard() {
                 <Link size={20} />
                 See linked farms
               </a>
+            </div>
+
+            <div>
+              <Button
+                className="bg-rose-600 my-4 rounded-lg w-full text-white hover:bg-rose-600/50 hover:ring-2 hover:ring-white"
+                onClick={handleReportDownload}
+              >
+                {clicked ? "Downloading" : 'Download data as pdf'}
+              </Button>
             </div>
           </CardContent>
         </Card>

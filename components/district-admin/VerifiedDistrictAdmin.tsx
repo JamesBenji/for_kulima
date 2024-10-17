@@ -10,6 +10,40 @@ import ViewParishAdminsButton from "../client-rej-by-server/district_admin/ViewP
 import ViewParishAccessRequestsButton from "../client-rej-by-server/district_admin/ViewParishAccessRequestsButton";
 import StatsDashboard from "../dashboard/Dashboard";
 import { useAdminDetails } from "@/utils/global_state/Store";
+import { DownloadDistrictFarmersReport } from "@/lib/shared/functions";
+import toast from "react-hot-toast";
+import { Button } from "../ui/button";
+
+const ExportDistrictFarmers = () => {
+  const [clicked, setClicked] = useState(false);
+  const adminData = useAdminDetails((state) => state.admin_details);
+
+  const handleReportDownload = async () => {
+    if (adminData) {
+      setClicked(true);
+      const response = await DownloadDistrictFarmersReport(adminData.district);
+      if (response.error) {
+        toast.error("Download failed", { duration: 3000 });
+        setClicked(false);
+        return;
+      }
+      toast.success("Data downloaded");
+      setClicked(false);
+      return;
+    }
+  };
+
+  return (
+    <div className="w-full flex items-center justify-center">
+      <Button
+        className="bg-rose-600 my-4 rounded-lg w-full md:w-fit text-white hover:bg-rose-600/50 hover:ring-2 hover:ring-white"
+        onClick={handleReportDownload}
+      >
+        {clicked ? "Downloading PDF" : "Download data for all farmers (PDF)"}
+      </Button>
+    </div>
+  );
+};
 
 const supabase = createClient();
 
@@ -81,19 +115,26 @@ function VerifiedDistrictAdmin() {
       name: "View farms",
       component: <ViewAllFarmsButton />,
     },
-    
+    {
+      name: "Export data",
+      component: <ExportDistrictFarmers />,
+    },
   ];
 
   return (
     <div className="flex-1 flex flex-col h-full dark:bg-black">
-      <Dashboard actions={actions} title="District Administrator Dashboard" location={{
+      <Dashboard
+        actions={actions}
+        title="District Administrator Dashboard"
+        location={{
           district: myData?.district,
           parish: myData?.parish,
-          allocation: myData?.allocation
-        }}/>
+          allocation: myData?.allocation,
+        }}
+      />
       {/* <div className="flex-1 flex flex-col h-full"> hello</div> */}
     </div>
-  )
+  );
 }
 
 export default VerifiedDistrictAdmin;

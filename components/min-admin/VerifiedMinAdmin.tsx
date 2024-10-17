@@ -1,17 +1,43 @@
 "use client";
 
-// import { createClient } from "@/utils/supabase/client";
-// import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import Dashboard from "@/components/protected_dashboard/dashboard";
 import ViewAllFarmersButton from "../client-rej-by-server/parish_admin/ViewAllFarmersButton";
 import ViewAllFarmsButton from "../client-rej-by-server/parish_admin/ViewAllFarmsButton";
 import ViewParishAdminsButton from "../client-rej-by-server/district_admin/ViewParishAdminsButton";
-// import ViewParishAccessRequestsButton from "../client-rej-by-server/district_admin/ViewParishAccessRequestsButton";
 import ViewDistrictAdminsButton from "../client-rej-by-server/ministry_admin/ViewDistrictAdminsButton";
 import ViewAccessRequestsButton from "../client-rej-by-server/ministry_admin/ViewAccessRequestsButton";
 import ViewAllParishAgentsButton from "../client-rej-by-server/parish_admin/ViewAllParishAgentsButton";
 import StatsDashboard from "../dashboard/Dashboard";
+import { Button } from "../ui/button";
+import { DownloadAllFarmersReport } from "@/lib/shared/functions";
+import toast from "react-hot-toast";
+
+const ExportAllFarmers = () => {
+  const [clicked, setClicked] = useState(false);
+
+  const handleReportDownload = async () => {
+    setClicked(true)
+    const response = await DownloadAllFarmersReport();
+    if (response.error) {
+      toast.error("Download failed", { duration: 3000 });
+      setClicked(false)
+      return;
+    }
+    toast.success("Data downloaded");
+    setClicked(false)
+    return;
+  };
+
+  return <div className="w-full flex items-center justify-center">
+  <Button
+    className="bg-rose-600 my-4 rounded-lg w-full md:w-fit text-white hover:bg-rose-600/50 hover:ring-2 hover:ring-white"
+    onClick={handleReportDownload}
+  >
+    {clicked ? "Downloading PDF" : 'Download data for all farmers (PDF)'}
+  </Button>
+</div>
+}
 
 function VerifiedMinAdmin() {
 
@@ -44,7 +70,10 @@ function VerifiedMinAdmin() {
       name: "View farms",
       component: <ViewAllFarmsButton />,
     },
-    // view agents
+    {
+      name: "Export data",
+      component: <ExportAllFarmers />,
+    },
     
   ];
 

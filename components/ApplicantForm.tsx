@@ -278,20 +278,7 @@ export default function ApplicantForm() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* <div>
-              <Label htmlFor="district">District</Label>
-              <Input
-                id="district"
-                name="district"
-                value={formData.district}
-                onChange={handleInputChange}
-                className={errors.district ? "border-red-500" : ""}
-              />
-              {errors.district && (
-                <p className="text-red-500 text-sm mt-1">{errors.district}</p>
-              )}
-            </div> */}
-
+            
             <div>
               <Label htmlFor="district">District</Label>
               <Select

@@ -48,7 +48,7 @@ type FarmerResponse = {
   image?: string;
   district?: string;
   parish?: string
-
+  nin?: string
 };
 
 type FarmResponse = {

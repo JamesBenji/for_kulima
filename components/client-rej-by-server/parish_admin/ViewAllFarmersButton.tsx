@@ -275,7 +275,7 @@ export default function ViewAllFarmersButton() {
                 {/* review section */}
               </div>
 
-              <div>
+              {/* <div>
                 {review === `${request?.first_name} ${request?.last_name}` && (
                   <div className="flex flex-col md:flex-row md:px-3 border rounded-md animate-accordion-down md:py-2">
                     <div className="hidden md:flex basis-1/3 p-5"></div>
@@ -412,7 +412,7 @@ export default function ViewAllFarmersButton() {
                     </div>
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
           ))}
       </div>
