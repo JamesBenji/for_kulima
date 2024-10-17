@@ -6,6 +6,22 @@ import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
+async function send_mail(email: string){
+  const response = await fetch('/api/send-mail', {
+    method: 'POST',
+    body: JSON.stringify({email})
+  })
+
+  const res = await response.json()
+
+  if(res.error){
+    toast.error('Failed to send confirmation email')
+    return;
+  }
+
+  toast.success('Confirmation email sent');
+}
+
 export default function GrantAccessButton({
   email,
   refresh,
@@ -35,6 +51,8 @@ export default function GrantAccessButton({
 
       if (data.error) return toast.error(data.error);
 
+      await send_mail(email)
+      
       toast.success("Access granted successfully!");
 
       refresh();

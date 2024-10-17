@@ -236,8 +236,6 @@ export default function ViewAccessRequestsButton() {
         ))}
       </div>
     </div>
-    // <button onClick={makeAPIcall} disabled={isLoading}>
-    //   {isLoading ? "Fetching data..." : "View access requests"}
-    // </button>
+   
   );
 }
