@@ -31,7 +31,7 @@ async function generateFarmerPDF(farmer: FarmerResponse): Promise<Buffer> {
     await page.setContent(html, { waitUntil: "networkidle0" });
 
     const pdfArray = await page.pdf({
-      format: "A4",
+      // format: "A4",
       margin: {
         top: "20mm",
         right: "20mm",
