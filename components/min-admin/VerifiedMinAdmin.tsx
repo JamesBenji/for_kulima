@@ -20,7 +20,7 @@ const ExportAllFarmers = () => {
     setClicked(true)
     const response = await DownloadAllFarmersReport();
     if (response.error) {
-      toast.error("Download failed", { duration: 3000 });
+      toast.error(`Download failed: ${response.error}`, { duration: 3000 });
       setClicked(false)
       return;
     }
