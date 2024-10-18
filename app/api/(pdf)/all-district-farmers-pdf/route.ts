@@ -1,3 +1,4 @@
+import { createFarmerHTML } from "@/lib/shared/functions";
 import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
