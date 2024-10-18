@@ -1,10 +1,11 @@
 import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
+import {  NextResponse } from "next/server";
+import puppeteer from "puppeteer";
+
 
 function generateFarmersHTML(farmers: FarmerResponse[]): string {
-  const tableRows = farmers
-    ?.map(
+  const tableRows = farmers?.map(
       (farmer: any) => `
         <tr>
             <td>${farmer?.first_name || "N/A"} ${farmer?.last_name || "N/A"}</td>
@@ -88,32 +89,16 @@ function generateFarmersHTML(farmers: FarmerResponse[]): string {
 }
 
 async function generateFarmersPDF(farmers: FarmerResponse[]): Promise<Buffer> {
-  const puppeteer = await import("puppeteer-core");
-  const Chromium = await import("chrome-aws-lambda");
-  let browser = null;
-
+  const browser = await puppeteer.launch();
   try {
-    let executablePath = await Chromium.default.executablePath;
-
-        if (!executablePath) {
-            // Fallback for environments where chrome-aws-lambda doesn't work
-            console.log('Chrome executable path not found, falling back to default Chrome path');
-            executablePath = process.env.CHROME_PATH || '/usr/bin/google-chrome';
-        }
-
-    browser = await puppeteer.default.launch({
-      args: Chromium.default.args,
-      executablePath: executablePath,
-      headless: Chromium.default.headless,
-    });
     const page = await browser.newPage();
 
     const html = generateFarmersHTML(farmers);
 
-    // await page.setContent(html, { waitUntil: "networkidle0" });
+    await page.setContent(html, { waitUntil: "networkidle0" });
 
     const pdfArray = await page.pdf({
-      // format: "A4",
+      format: "A4",
       landscape: true,
       margin: {
         top: "10mm",
@@ -126,12 +111,16 @@ async function generateFarmersPDF(farmers: FarmerResponse[]): Promise<Buffer> {
 
     return Buffer.from(pdfArray);
   } finally {
-    if (browser) await browser.close();
+    await browser.close();
   }
 }
 
-async function getFarmers(supabase: SupabaseClient<any, "public", any>) {
-  const { data, error } = await supabase.from("farmers").select("*");
+async function getFarmers(
+  supabase: SupabaseClient<any, "public", any>,
+) {
+  const { data, error } = await supabase
+    .from("farmers")
+    .select("*")
 
   if (error) return { error };
 
@@ -141,23 +130,24 @@ async function getFarmers(supabase: SupabaseClient<any, "public", any>) {
 export async function GET() {
   const supabase = createClient();
   try {
-    //  fetch farmer data by id
-    const farmer_response = await getFarmers(supabase);
-    if (farmer_response.error) {
-      throw new Error("Error getting farmers");
-    }
+      //  fetch farmer data by id
+      const farmer_response = await getFarmers(supabase);
+      if (farmer_response.error) {
+        throw new Error("Error getting farmers");
+      }
 
-    const farmers = farmer_response.data as FarmerResponse[];
+      const farmers = farmer_response.data as FarmerResponse[];
 
-    const pdfBuffer = await generateFarmersPDF(farmers);
+      const pdfBuffer = await generateFarmersPDF(farmers);
 
-    return new NextResponse(pdfBuffer, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="all_farmers_report.pdf"`,
-      },
-    });
+      return new NextResponse(pdfBuffer, {
+        status: 200,
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment; filename="all_farmers_report.pdf"`,
+        },
+      });
+    
   } catch (error) {
     return NextResponse.json(
       {
