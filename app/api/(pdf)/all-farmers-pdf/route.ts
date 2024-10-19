@@ -1,8 +1,8 @@
-import { createFarmerHTML } from "@/lib/shared/functions";
 import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
-import { NextRequest, NextResponse } from "next/server";
-import puppeteer from "puppeteer";
+import {  NextResponse } from "next/server";
+// import puppeteer from "puppeteer-core";
+import chromium from 'chrome-aws-lambda'
 
 
 function generateFarmersHTML(farmers: FarmerResponse[]): string {
@@ -89,8 +89,17 @@ function generateFarmersHTML(farmers: FarmerResponse[]): string {
     `;
 }
 
-async function generateFarmersPDF(farmers: FarmerResponse[]): Promise<Buffer> {
-  const browser = await puppeteer.launch();
+// Promise<Buffer> return type removed
+async function generateFarmersPDF(farmers: FarmerResponse[]) {
+  // executable path is missing ; check upload repo
+  const browser = await chromium.puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
+    // ignoreHTTPSErrors: true,
+  });
+
   try {
     const page = await browser.newPage();
 
@@ -111,7 +120,12 @@ async function generateFarmersPDF(farmers: FarmerResponse[]): Promise<Buffer> {
     });
 
     return Buffer.from(pdfArray);
-  } finally {
+  } catch(error){
+    console.error('All-farmers-pdf browser error: ', error)
+    return 
+  }
+  
+  finally {
     await browser.close();
   }
 }
