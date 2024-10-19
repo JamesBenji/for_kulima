@@ -2,32 +2,32 @@ import { createFarmerHTML } from "@/lib/shared/functions";
 import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
-import puppeteer from "puppeteer";
+// import puppeteer from "puppeteer";
 
-async function generateFarmerPDF(farmer: FarmerResponse): Promise<Buffer> {
-    const browser = await puppeteer.launch();
-    try {
-        const page = await browser.newPage();
-        const html = await createFarmerHTML(farmer);
+// async function generateFarmerPDF(farmer: FarmerResponse): Promise<Buffer> {
+//     const browser = await puppeteer.launch();
+//     try {
+//         const page = await browser.newPage();
+//         const html = await createFarmerHTML(farmer);
 
-        await page.setContent(html, { waitUntil: 'networkidle0' });
+//         await page.setContent(html, { waitUntil: 'networkidle0' });
 
-        const pdfArray = await page.pdf({
-            format: 'A4',
-            margin: {
-                top: '20mm',
-                right: '20mm',
-                bottom: '20mm',
-                left: '20mm'
-            },
-            printBackground: true
-        });
+//         const pdfArray = await page.pdf({
+//             format: 'A4',
+//             margin: {
+//                 top: '20mm',
+//                 right: '20mm',
+//                 bottom: '20mm',
+//                 left: '20mm'
+//             },
+//             printBackground: true
+//         });
 
-        return Buffer.from(pdfArray);
-    } finally {
-        await browser.close();
-    }
-}
+//         return Buffer.from(pdfArray);
+//     } finally {
+//         await browser.close();
+//     }
+// }
 
 async function getFarmer(
   supabase: SupabaseClient<any, "public", any>,
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 
       const farmer = farmer_response.data as FarmerResponse;    
 
-    const pdfBuffer = await generateFarmerPDF(farmer);
+    const pdfBuffer = 'await generateFarmerPDF(farmer)';
 
     return new NextResponse(pdfBuffer, {
         status: 200,
