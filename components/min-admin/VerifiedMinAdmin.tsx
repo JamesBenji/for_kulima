@@ -13,20 +13,24 @@ import { Button } from "../ui/button";
 import { DownloadAllFarmersReport } from "@/lib/shared/functions";
 import toast from "react-hot-toast";
 
+
 const ExportAllFarmers = () => {
   const [clicked, setClicked] = useState(false);
 
   const handleReportDownload = async () => {
     setClicked(true)
+    
     const response = await DownloadAllFarmersReport();
-    if (response.error) {
-      toast.error("Download failed", { duration: 3000 });
-      setClicked(false)
-      return;
-    }
-    toast.success("Data downloaded");
-    setClicked(false)
-    return;
+    
+    // if (response.error) {
+    //   toast.error("Download failed", { duration: 3000 });
+    //   setClicked(false)
+    //   return;
+    // }
+
+    // // toast.success("Data downloaded");
+    // setClicked(false)
+    // return;
   };
 
   return <div className="w-full flex items-center justify-center">

@@ -1,4 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import {jsPDF} from 'jspdf'
+
 
 // view field agents
 export async function viewFieldAgents(
@@ -67,12 +69,12 @@ export async function viewOneParishAdmin(
 }
 
 export function createFarmerHTML(farmer: FarmerResponse): string {
-    const telString = farmer?.tel?.[0] || 'N/A';
-    const otherIncomeSources = farmer?.other_income_sources
-        .map(source => `<li>${source?.income_name}</li>`)
-        .join('');
+  const telString = farmer?.tel?.[0] || "N/A";
+  const otherIncomeSources = farmer?.other_income_sources
+    .map((source) => `<li>${source?.income_name}</li>`)
+    .join("");
 
-    const html = `
+  const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -87,6 +89,7 @@ export function createFarmerHTML(farmer: FarmerResponse): string {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #777
         }
         h1 {
             color: #2c3e50;
@@ -124,47 +127,47 @@ export function createFarmerHTML(farmer: FarmerResponse): string {
 <body>
     <h1>Farmer Data</h1>
     
-    ${farmer?.image ? `<img src="${farmer?.image}" alt="Farmer's Image" class="farmer-image">` : ''}
+    ${farmer?.image ? `<img src="${farmer?.image}" alt="Farmer's Image" class="farmer-image">` : ""}
     
     <div class="section">
         <span class="section-title">Personal Information:</span>
         <p>
-            Name: ${farmer?.first_name || 'N/A'} ${farmer?.last_name || 'N/A'}<br>
-            Date of Birth: ${farmer?.dob || 'N/A'}<br>
-            Gender: ${farmer?.gender || 'N/A'}<br>
-            NIN: ${farmer?.nin || 'N/A'}<br>
+            Name: ${farmer?.first_name || "N/A"} ${farmer?.last_name || "N/A"}<br>
+            Date of Birth: ${farmer?.dob || "N/A"}<br>
+            Gender: ${farmer?.gender || "N/A"}<br>
+            NIN: ${farmer?.nin || "N/A"}<br>
             Email: ${farmer?.email}<br>
-            Phone: ${telString || 'N/A'}<br>
-            Address: ${farmer?.address || 'N/A'}<br>
-            District: ${farmer?.district || 'N/A'}<br>
-            Parish: ${farmer?.parish || 'N/A'}
+            Phone: ${telString || "N/A"}<br>
+            Address: ${farmer?.address || "N/A"}<br>
+            District: ${farmer?.district || "N/A"}<br>
+            Parish: ${farmer?.parish || "N/A"}
         </p>
     </div>
 
     <div class="section">
         <span class="section-title">Household Information:</span>
         <p>
-            Household Size: ${farmer?.household_size || 'N/A'}<br>
-            Number of Children: ${farmer?.no_children || 'N/A'}<br>
-            Number of School-going Children: ${farmer?.count_school_going || 'N/A'}
+            Household Size: ${farmer?.household_size || "N/A"}<br>
+            Number of Children: ${farmer?.no_children || "N/A"}<br>
+            Number of School-going Children: ${farmer?.count_school_going || "N/A"}
         </p>
     </div>
 
     <div class="section">
         <span class="section-title">Income Information:</span>
         <p>
-            Average Income per Harvest: ${farmer?.average_income_per_harvest || 'N/A'}
+            Average Income per Harvest: ${farmer?.average_income_per_harvest || "N/A"}
         </p>
         <p>Other Income Sources:</p>
         <ul>
-            ${otherIncomeSources || 'N/A'}
+            ${otherIncomeSources || "N/A"}
         </ul>
     </div>
 
     <div class="section">
         <span class="section-title">Additional Information:</span>
         <p>
-            Farmer UID: ${farmer?.farmer_uid || 'N/A'}<br>
+            Farmer UID: ${farmer?.farmer_uid || "N/A"}<br>
             Added By: ${farmer?.added_by}
         </p>
     </div>
@@ -172,101 +175,111 @@ export function createFarmerHTML(farmer: FarmerResponse): string {
 </html>
     `;
 
-    return html;
+  return html;
 }
 
-export const DownloadFarmerReport = async ( farmerId: number) => {
-    try {
-      const response = await fetch('/api/farmer-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ farmer_id: farmerId }),
-      });
+export const DownloadFarmerReport = async (farmerId: number) => {
+  try {
+    const response = await fetch("/api/farmer-pdf", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ farmer_id: farmerId }),
+    });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate PDF');
-      }
-
-      // Get the response as a Blob (PDF file)
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-
-      // Create a link and trigger the download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `KULIMA REPORT- Farmer_${farmerId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      return {downloaded: true}
-    } catch (error) {
-      console.error('Error downloading PDF:', error);
-      return {error}
+    if (!response.ok) {
+      throw new Error("Failed to generate PDF");
     }
-  
-}
+
+    // Get the response as a Blob (PDF file)
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    // Create a link and trigger the download
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `KULIMA REPORT- Farmer_${farmerId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    return { downloaded: true };
+  } catch (error) {
+    console.error("Error downloading PDF:", error);
+    return { error };
+  }
+};
 
 export const DownloadAllFarmersReport = async () => {
-    try {
-      const response = await fetch('/api/all-farmers-pdf');
+  try {
+    const response = await fetch("/api/all-farmers-pdf");
 
-      if (!response.ok) {
-        throw new Error('Failed to generate PDF');
-      }
-
-      // Get the response as a Blob (PDF file)
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-
-      // Create a link and trigger the download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `KULIMA REPORT- All Farmers.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      return {downloaded: true}
-    } catch (error) {
-      console.error('Error downloading PDF:', error);
-      return {error}
+    if (!response.ok) {
+      throw new Error("Failed to generate PDF");
     }
-  
-}
 
-export const DownloadDistrictFarmersReport = async (district: string) => {
-    try {
-      const response = await fetch('/api/all-district-farmers-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+    const res = await response.json();
+
+    const doc = new jsPDF("landscape", "px", "a4");
+      doc.html(res.html_text, {
+        callback: (pdf) => {
+          const res = pdf.save("all-farmers.pdf");
+          console.log({res});
         },
-        body: JSON.stringify({district: district})
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate PDF');
-      }
 
-      // Get the response as a Blob (PDF file)
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
 
-      // Create a link and trigger the download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `KULIMA REPORT- ${district}_farmers.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+    // Get the response as a Blob (PDF file)
+    // const blob = await response.blob();
+    // const url = window.URL.createObjectURL(blob);
 
-      return {downloaded: true}
-    } catch (error) {
-      console.error('Error downloading PDF:', error);
-      return {error}
+    // // Create a link and trigger the download
+    // const a = document.createElement('a');
+    // a.href = url;
+    // a.download = `KULIMA REPORT- All Farmers.pdf`;
+    // document.body.appendChild(a);
+    // a.click();
+    // document.body.removeChild(a);
+
+    // return {downloaded: true}
+    return { text: res.html_text };
+  } catch (error) {
+    console.error("Error downloading PDF:", error);
+    return { error };
+  }
+};
+
+export const DownloadDistrictFarmersReport = async (district: string) => {
+  try {
+    const response = await fetch("/api/all-district-farmers-pdf", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ district: district }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to generate PDF");
     }
- 
-}
+
+    // Get the response as a Blob (PDF file)
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    // Create a link and trigger the download
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `KULIMA REPORT- ${district}_farmers.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    return { downloaded: true };
+  } catch (error) {
+    console.error("Error downloading PDF:", error);
+    return { error };
+  }
+};
