@@ -11,6 +11,19 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ["react-text-gradients"],
   },
+  // webpack: (config, { isServer }) => {
+  //   // Define externals only for the client-side
+  //   if (!isServer) {
+  //     config.externals = {
+  //       ...config.externals,
+  //       canvg: "canvg",
+  //       html2canvas: "html2canvas",
+  //       dompurify: "dompurify"
+  //     };
+  //   }
+
+  //   return config;
+  // }
 };
 
 

@@ -45,14 +45,14 @@ export default function Dashboard({
   }, [actions]);
 
   return (
-    <div className="flex-1 h-full flex flex-col">
+    <div className="flex-1 h-full flex flex-col ">
       <div className=" flex-1 flex flex-col md:flex-row w-full border-t-2">
-        <div className="md:hidden">
+        <div className="md:hidden overflow-y-scroll">
           <Sheet>
             <SheetTrigger className="p-3 self-end">
               <Menu />
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent className="overflow-scroll">
               <SheetHeader>
                 <SheetTitle>Actions</SheetTitle>
                 <SheetDescription></SheetDescription>

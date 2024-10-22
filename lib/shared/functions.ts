@@ -1,6 +1,12 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import {jsPDF} from 'jspdf'
 
+export const cleanHtml = (str: string) => {
+  let cleaned = str.replace(/^["']|["']$/g, "");
+  cleaned = cleaned.replace(/\\n\s*/g, "");
+  cleaned = cleaned.replace(/\\/g, "");
+  cleaned = cleaned.trim();
+  return cleaned;
+};
 
 // view field agents
 export async function viewFieldAgents(
@@ -178,108 +184,110 @@ export function createFarmerHTML(farmer: FarmerResponse): string {
   return html;
 }
 
-export const DownloadFarmerReport = async (farmerId: number) => {
-  try {
-    const response = await fetch("/api/farmer-pdf", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ farmer_id: farmerId }),
-    });
+// export const DownloadFarmerReport = async (farmerId: number) => {
+//   try {
+//     const response = await fetch("/api/farmer-pdf", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({ farmer_id: farmerId }),
+//     });
 
-    if (!response.ok) {
-      throw new Error("Failed to generate PDF");
-    }
+//     if (!response.ok) {
+//       throw new Error("Failed to generate PDF");
+//     }
 
-    // Get the response as a Blob (PDF file)
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
+//     // Get the response as a Blob (PDF file)
+//     const blob = await response.blob();
+//     const url = window.URL.createObjectURL(blob);
 
-    // Create a link and trigger the download
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `KULIMA REPORT- Farmer_${farmerId}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+//     // Create a link and trigger the download
+//     const a = document.createElement("a");
+//     a.href = url;
+//     a.download = `KULIMA REPORT- Farmer_${farmerId}.pdf`;
+//     document.body.appendChild(a);
+//     a.click();
+//     document.body.removeChild(a);
 
-    return { downloaded: true };
-  } catch (error) {
-    console.error("Error downloading PDF:", error);
-    return { error };
-  }
-};
+//     return { downloaded: true };
+//   } catch (error) {
+//     console.error("Error downloading PDF:", error);
+//     return { error };
+//   }
+// };
 
-export const DownloadAllFarmersReport = async () => {
-  try {
-    const response = await fetch("/api/all-farmers-pdf");
+// export const DownloadAllFarmersReport = async () => {
+//   try {
+//     const response = await fetch("/api/all-farmers-pdf");
 
-    if (!response.ok) {
-      throw new Error("Failed to generate PDF");
-    }
+//     if (!response.ok) {
+//       throw new Error("Failed to generate PDF");
+//     }
 
-    const res = await response.json();
+//     const res = await response.json();
 
-    const doc = new jsPDF("landscape", "px", "a4");
-      doc.html(res.html_text, {
-        callback: (pdf) => {
-          const res = pdf.save("all-farmers.pdf");
-          console.log({res});
-        },
-      });
+//     // const doc = new jsPDF({
+//     //   orientation: 'landscape',
+//     //   unit: 'in',
+//     //   // format: [1,1]
+//     // });
+//       // doc.html(res.html_text, {
+//       //   callback: (pdf) => {
+//       //     const res = pdf.save("all-farmers.pdf");
+//       //     console.log({res});
+//       //   },
+//       // });
 
+//     // Get the response as a Blob (PDF file)
+//     // const blob = await response.blob();
+//     // const url = window.URL.createObjectURL(blob);
 
+//     // // Create a link and trigger the download
+//     // const a = document.createElement('a');
+//     // a.href = url;
+//     // a.download = `KULIMA REPORT- All Farmers.pdf`;
+//     // document.body.appendChild(a);
+//     // a.click();
+//     // document.body.removeChild(a);
 
-    // Get the response as a Blob (PDF file)
-    // const blob = await response.blob();
-    // const url = window.URL.createObjectURL(blob);
+//     // return {downloaded: true}
+//     return { text: res.html_text };
+//   } catch (error) {
+//     console.error("Error downloading PDF:", error);
+//     return { error };
+//   }
+// };
 
-    // // Create a link and trigger the download
-    // const a = document.createElement('a');
-    // a.href = url;
-    // a.download = `KULIMA REPORT- All Farmers.pdf`;
-    // document.body.appendChild(a);
-    // a.click();
-    // document.body.removeChild(a);
+// export const DownloadDistrictFarmersReport = async (district: string) => {
+//   try {
+//     const response = await fetch("/api/all-district-farmers-pdf", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({ district: district }),
+//     });
 
-    // return {downloaded: true}
-    return { text: res.html_text };
-  } catch (error) {
-    console.error("Error downloading PDF:", error);
-    return { error };
-  }
-};
+//     if (!response.ok) {
+//       throw new Error("Failed to generate PDF");
+//     }
 
-export const DownloadDistrictFarmersReport = async (district: string) => {
-  try {
-    const response = await fetch("/api/all-district-farmers-pdf", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ district: district }),
-    });
+//     // Get the response as a Blob (PDF file)
+//     const blob = await response.blob();
+//     const url = window.URL.createObjectURL(blob);
 
-    if (!response.ok) {
-      throw new Error("Failed to generate PDF");
-    }
+//     // Create a link and trigger the download
+//     const a = document.createElement("a");
+//     a.href = url;
+//     a.download = `KULIMA REPORT- ${district}_farmers.pdf`;
+//     document.body.appendChild(a);
+//     a.click();
+//     document.body.removeChild(a);
 
-    // Get the response as a Blob (PDF file)
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-
-    // Create a link and trigger the download
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `KULIMA REPORT- ${district}_farmers.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    return { downloaded: true };
-  } catch (error) {
-    console.error("Error downloading PDF:", error);
-    return { error };
-  }
-};
+//     return { downloaded: true };
+//   } catch (error) {
+//     console.error("Error downloading PDF:", error);
+//     return { error };
+//   }
+// };

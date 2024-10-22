@@ -1,9 +1,7 @@
-import { createFarmerHTML } from "@/lib/shared/functions";
 import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 // import puppeteer from "puppeteer";
-
 
 function generateFarmersHTML(farmers: FarmerResponse[]): string {
   const tableRows = farmers
@@ -90,33 +88,6 @@ function generateFarmersHTML(farmers: FarmerResponse[]): string {
     `;
 }
 
-// async function generateFarmersPDF(farmers: FarmerResponse[]): Promise<Buffer> {
-//   const browser = await puppeteer.launch();
-//   try {
-//     const page = await browser.newPage();
-
-//     const html = generateFarmersHTML(farmers);
-
-//     await page.setContent(html, { waitUntil: "networkidle0" });
-
-//     const pdfArray = await page.pdf({
-//       format: "A4",
-//       landscape: true,
-//       margin: {
-//         top: "10mm",
-//         right: "10mm",
-//         bottom: "10mm",
-//         left: "10mm",
-//       },
-//       printBackground: true,
-//     });
-
-//     return Buffer.from(pdfArray);
-//   } finally {
-//     await browser.close();
-//   }
-// }
-
 async function getFarmers(
   supabase: SupabaseClient<any, "public", any>,
   district: string
@@ -136,25 +107,24 @@ export async function POST(req: NextRequest) {
   try {
     const receivedJSON = await req.json();
     const district = receivedJSON.district;
-    //  fetch farmer data by id
+    
     if (district) {
       const farmer_response = await getFarmers(supabase, district);
+
       if (farmer_response.error) {
         throw new Error("Error getting farmers");
       }
 
-      const farmers = farmer_response.data as FarmerResponse[];
+      const farmers = (farmer_response.data as FarmerResponse[]) || [];
 
-      // const pdfBuffer = await generateFarmersPDF(farmers);
-      const pdfBuffer = '';
+      const resHTML = generateFarmersHTML(farmers);
 
-      return new NextResponse(pdfBuffer, {
-        status: 200,
-        headers: {
-          "Content-Type": "application/pdf",
-          "Content-Disposition": `attachment; filename="${district}_farmers_report.pdf"`,
-        },
-      });
+      return NextResponse.json(
+        { html_text: JSON.stringify(resHTML) },
+        {
+          status: 200,
+        }
+      );
     }
   } catch (error) {
     return NextResponse.json(

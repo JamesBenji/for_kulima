@@ -13,7 +13,7 @@ export default function ActionsPane({
 }) {
   return (
     <div
-      className={`${hidden ? "hidden" : ""} md:flex flex-1  basis-1/5 flex-col ${titleRemoved ? "" : "border-r-2"} py-5`}
+      className={`${hidden ? "hidden" : ""} md:flex flex-1  basis-1/5 flex-col overflow-y-scroll ${titleRemoved ? "" : "border-r-2"} py-5`}
     >
       <div className="pb-4 ">
         {!titleRemoved && (
