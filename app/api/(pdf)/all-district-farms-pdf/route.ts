@@ -11,7 +11,11 @@ function generateFarmsHTML(farms: FarmResponse[]): string {
     items?.map(item => `${item[nameField]}: ${item[descField]}`).join("; ") || "N/A";
 
   const formatCoordinates = (coords: { lat: number; lon: number }[]) =>
-    coords?.map((coord, idx) => `Point ${idx + 1}: (${coord.lat}, ${coord.lon})`).join("; ") || "N/A";
+    coords
+      ?.map(
+        (coord, idx) => `<p>${idx + 1}: (${coord.lat}, ${coord.lon})</p>\n`
+      )
+      .join('') || "N/A";
 
   // Generate table rows
   const tableRows = farms?.map(farm => `
@@ -34,7 +38,7 @@ function generateFarmsHTML(farms: FarmResponse[]): string {
       <td>${formatNestedItems(farm?.pests || [], "pest_name", "effect")}</td>
       <td>${formatNestedItems(farm?.pest_control || [], "pest", "control_measure")}</td>
       <td>${farm?.fertilizers?.map(f => `${f.type} (${f.frequency})`).join(", ") || "N/A"}</td>
-      <td>${formatCoordinates(farm?.geo_location || [])}</td>
+      <td class="coordinates">${formatCoordinates(farm?.geo_location || [])}</td>
       <td>${farm?.added_by || "N/A"}</td>
     </tr>
   `).join("");
@@ -74,6 +78,9 @@ function generateFarmsHTML(farms: FarmResponse[]): string {
         h1 {
             color: #333;
             text-align: center;
+        }
+        .coordinates {
+            white-space: pre-line;
         }
     </style>
 </head>

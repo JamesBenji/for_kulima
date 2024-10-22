@@ -171,7 +171,7 @@ const ExportDistrictFarmers = () => {
         throw new Error("Failed to generate PDF");
       }
 
-      const doc = new jsPDF("l", "mm", "a4");
+      const doc = new jsPDF("l", "mm", "a2");
       const pageWidth = doc.internal.pageSize.width;
 
       // Add title
